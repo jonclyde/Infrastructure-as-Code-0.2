@@ -4,17 +4,13 @@ Param(
         [Parameter(Mandatory=$true)]
         $Identifier,
         [Parameter(Mandatory=$true)]
-        $HubIdentifier,
-        [Parameter(Mandatory=$true)]
         $HubRG,
-        [Parameter(Mandatory=$true)]
-        $DeployFirewalls,
-        [Parameter(Mandatory=$false)]
-        $FirewallIP,
         [Parameter(Mandatory=$true)]
         $RGName,
         [Parameter(Mandatory=$true)]
-        $location,
-        [Parameter(Mandatory=$false)]
-        $FirewallHubSubnetIdentifier
+        $DeployDR,
+        [Parameter(Mandatory=$true)]
+        $LocationPrimary,
+        [Parameter(Mandatory=$true)]
+        $LocationDR
     )

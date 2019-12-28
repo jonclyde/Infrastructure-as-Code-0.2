@@ -2,31 +2,11 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "VNETAddressRange":{
-            "value": "10.180.4.0/23"
-        },
-        "DeployGWSubnet":{
-            "value":false
-        },
-        "GWSubnetAddressRange":{
-            "value": "none"
-        },
-        "subnetsToDeploy": {
+        "VNETPeerings": {
             "value": [
                 {
-                    "subnetName": "web",
-                    "subnetAddressRange": "10.180.4.0/25",
-                    "nsgName": "nsg-frc1-int-web"
-                },
-                {
-                    "subnetName": "app",
-                    "subnetAddressRange": "10.180.4.128/25",
-                    "nsgName": "nsg-frc1-int-app"
-                },
-                {
-                    "subnetName": "sql",
-                    "subnetAddressRange": "10.180.5.0/25",
-                    "nsgName": "nsg-frc1-int-sql"
+                    "spokeIdentifier1": "hub",
+                    "spokeIdentifier2": "spoke1"
                 }
             ]
         }
