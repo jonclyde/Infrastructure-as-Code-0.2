@@ -14,7 +14,7 @@ Param(
     )
 
     Write-Host "--------------------------------"
-    Write-Host "Section 0 - Set variables"
+    Write-Host "Section 0 - Pre-requisites and set variables"
     Write-Host "--------------------------------"
 
     Write-Host "Set template and parameters paths"
