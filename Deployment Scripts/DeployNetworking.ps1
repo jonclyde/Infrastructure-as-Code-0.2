@@ -18,6 +18,7 @@ Param(
     Write-Host "Set template and parameters paths"
     $NetTemplateFilePrimary = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, "..\nested templates\virtual network\VirtualNetworkPrimary.json"))
     $NetTemplateFileDR = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, "..\nested templates\virtual network\VirtualNetworkDR.json"))
+    $NetPeerTemplateFile = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, "..\Nested Templates\Virtual Network Peering\vnetpeering.json"))
     $SpokeParamFile = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, "..\parameters\$spoke.parameters.json"))
 
     Write-Host "Checking whether template file for $spoke exists"
@@ -54,15 +55,20 @@ Param(
                                       -VNName $VNNameDR `
                                       -EnvironmentIdentifier "dr"
         }
-        <#
+        
         #Deploy VNET peering (for spokes only)
-        if($spoke -ne "hub"){
+        if($spoke -eq "hub"){
+
+            Write-Host "Deploy vnet peering between $VNNamePrimary and $VNNameDR"
+
+            New-AzResourceGroupDeployment -TemplateFile $NetPeerTemplateFile -ResourceGroupName $RGNamePrimary -VN1Name $VNNamePrimary -VN2Name $VNNameDR -VN2RG $RGNameDR
+        }
+        else{
 
             Write-Host "Deploy vnet peering between $identifier and $hubidentifier"
 
             New-AzResourceGroupDeployment -TemplateFile $VNetPeerTemplateFile -ResourceGroupName $RGName -spokeIdentifier $Identifier -HubIdentifier $HubIdentifier -HubRG $HubRG
         }
-        #>
 
     }else{
         Write-Host "No parameters file for $spoke exists. Spoke will not be deployed"
