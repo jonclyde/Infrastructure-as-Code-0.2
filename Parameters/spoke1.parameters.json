@@ -2,11 +2,35 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "Spokdentifier":{
-            "value": "app1"
+        "VNAddressRangePrimary":{
+            "value": "10.0.4.0/22"
         },
-        "VNAddressRange":{
-            "value": "app1"
+        "VNAddressRangeDR":{
+            "value": "10.1.4.0/22"
+        },
+        "subnetsToDeploy": {
+            "value": [
+                {
+                    "subnetName": "appgateway",
+                    "subnetAddressRangePrimary": "10.0.4.0/27",
+                    "subnetAddressRangeDR": "10.1.4.0/27"
+                },
+                {
+                    "subnetName": "app",
+                    "subnetAddressRangePrimary": "10.0.5.0/27",
+                    "subnetAddressRangeDR": "10.1.5.0/27"
+                },
+                {
+                    "subnetName": "web",
+                    "subnetAddressRangePrimary": "10.0.6.0/27",
+                    "subnetAddressRangeDR": "10.1.6.0/27"
+                },
+                {
+                    "subnetName": "sql",
+                    "subnetAddressRangePrimary": "10.0.7.0/27",
+                    "subnetAddressRangeDR": "10.1.7.0/27"
+                }
+            ]
         }
     }
 }
