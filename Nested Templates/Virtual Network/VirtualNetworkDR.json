@@ -1,0 +1,119 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "VNAddressRangePrimary": {
+            "type": "string"
+        },
+        "VNAddressRangeDR": {
+            "type": "string"
+        },
+        "identifier": {
+            "type": "string"
+        },
+        "subnetsToDeploy": {
+            "type": "array"
+        },
+        "VNName": {
+            "type": "string"
+        },
+        "EnvironmentIdentifier": {
+            "type": "string"
+        }
+    },
+    "variables": {
+        "vnetName": "[parameters('VNName')]"
+    },
+    "resources": [
+        {
+            "name": "[concat('nsg-',parameters('EnvironmentIdentifier'),'-',parameters('Identifier'),'-',parameters('subnetsToDeploy')[CopyIndex()].subnetName)]",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "apiVersion": "2019-04-01",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "securityRules": [
+                    {
+                        "name": "AllowAnyInbound",
+                        "properties": {
+                            "description": "Allow Any",
+                            "protocol": "*",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "1-65535",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 100,
+                            "direction": "Inbound"
+                        }
+                    },
+                    {
+                        "name": "AllowAnyOutbound",
+                        "properties": {
+                            "description": "Allow Any",
+                            "protocol": "*",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "1-65535",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 100,
+                            "direction": "Outbound"
+                        }
+                    }
+                ],
+                "defaultSecurityRules": []
+            },
+            "copy": {
+                "name": "networkSecurityGroups",
+                "count": "[length(parameters('subnetsToDeploy'))]"
+            },
+            "resources": []
+        },
+        {
+            "name": "[concat(variables('vnetName'))]",
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2019-04-01",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "[parameters('VNAddressRangeDR')]"
+                    ]
+                }
+            },
+            "resources": []
+        },
+        {
+            "name": "[concat(variables('vnetName'),'/sn-',parameters('subnetsToDeploy')[CopyIndex()].subnetName)]",
+            "type": "Microsoft.Network/virtualNetworks/subnets",
+            "apiVersion": "2019-04-01",
+            "dependsOn": [
+                "[concat('Microsoft.Network/networkSecurityGroups/',concat('nsg-',parameters('EnvironmentIdentifier'),'-',parameters('Identifier'),'-',parameters('subnetsToDeploy')[CopyIndex()].subnetName))]",
+                "[concat('Microsoft.Network/virtualNetworks/',variables('vnetName'))]"
+            ],
+            "properties": {
+                "addressPrefix": "[parameters('subnetsToDeploy')[CopyIndex()].subnetAddressRangeDR]",
+                "networkSecurityGroup": {
+                    "id": "[resourceid('Microsoft.Network/networkSecurityGroups',concat('nsg-',parameters('EnvironmentIdentifier'),'-',parameters('Identifier'),'-',parameters('subnetsToDeploy')[CopyIndex()].subnetName))]"
+                },
+                "serviceEndpoints": [
+                    {
+                        "service": "Microsoft.Storage"
+                    },
+                    {
+                        "service": "Microsoft.KeyVault"
+                    },
+                    {
+                        "service": "Microsoft.Sql"
+                    }
+                ]
+            },
+            "copy": {
+                "name": "subnets",
+                "count": "[length(parameters('subnetsToDeploy'))]",
+                "mode": "Serial"
+            }
+        }
+    ],
+    "outputs": {}
+}

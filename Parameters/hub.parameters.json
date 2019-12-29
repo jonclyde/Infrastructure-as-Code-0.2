@@ -1,0 +1,31 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "VNAddressRangePrimary":{
+            "value": "10.0.0.0/22"
+        },
+        "VNAddressRangeDR":{
+            "value": "10.1.0.0/22"
+        },
+        "subnetsToDeploy": {
+            "value": [
+                {
+                    "subnetName": "firewall",
+                    "subnetAddressRangePrimary": "10.0.0.0/27",
+                    "subnetAddressRangeDR": "10.1.0.0/27"
+                },
+                {
+                    "subnetName": "mgmt",
+                    "subnetAddressRangePrimary": "10.0.0.64/27",
+                    "subnetAddressRangeDR": "10.1.0.64/27"
+                },
+                {
+                    "subnetName": "addc",
+                    "subnetAddressRangePrimary": "10.0.0.128/27",
+                    "subnetAddressRangeDR": "10.1.0.128/27"
+                }
+            ]
+        }
+    }
+}
