@@ -1,0 +1,538 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "adminPassword": {
+            "type": "securestring"
+        },
+        "vnetResourceGroup": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the Resource Group of the VNET (e.g. CUDA-RG-VNET)"
+            }
+        },
+        "FirewallHubSubnetIdentifier": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the Subnet containing the CloudGen Firewall (e.g. cuda-subnet-gcf)"
+            }
+        },
+        "FirewallHubSubnetRange": {
+            "type": "string",
+            "metadata": {
+                "description": "Network range of the Subnet containing the CloudGen Firewall (e.g. 172.16.136.0/24)"
+            }
+        },
+        "hubidentifier": {
+            "type": "string"
+        },
+        "vmSize": {
+            "type": "string",
+            "defaultValue": "Standard_F1s",
+            "allowedValues": [
+                "Standard_F1s",
+                "Standard_F2s",
+                "Standard_F4s",
+                "Standard_F8s",
+                "Standard_D1_v2",
+                "Standard_D2_v2",
+                "Standard_D3_v2",
+                "Standard_D4_v2",
+                "Standard_DS1_v2",
+                "Standard_DS2_v2",
+                "Standard_DS3_v2",
+                "Standard_DS4_v2",
+                "Standard_D2_v3",
+                "Standard_D4_v3",
+                "Standard_D8_v3",
+                "Standard_D2S_v3",
+                "Standard_D4S_v3",
+                "Standard_D8S_v3"
+            ],
+            "metadata": {
+                "description": "IP address of the second CGF in the cluster"
+            }
+        },
+        "ccManaged": {
+            "type": "string",
+            "allowedValues": [
+                "yes",
+                "no"
+            ],
+            "defaultValue": "no"
+        },
+        "ccClusterName": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "ccRangeId": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "ccIpAddress": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "ccSecret": {
+            "type": "securestring",
+            "defaultValue": ""
+        }
+    },
+    "variables": {
+        "computeApiVersion": "2019-03-01",
+        "networkApiVersion": "2019-04-01",
+        "vnetName": "[concat('vnet-',parameters('hubidentifier'),'-infrastructure')]",
+        "imagePublisher": "barracudanetworks",
+        "imageOffer": "barracuda-ng-firewall",
+        "avName": "[concat('as-',parameters('hubidentifier'),'-firewall')]",
+        "vnetID": "[resourceId(parameters('vnetResourceGroup'),'Microsoft.Network/virtualNetworks',variables('vnetname'))]",
+        "subnetRefCGF": "[concat(variables('vnetID'),'/subnets/','sn-',parameters('FirewallHubSubnetIdentifier'))]",
+        "gcfVmName1": "[concat('vm-',parameters('hubidentifier'),'-fw-01')]",
+        "gcfVmName2": "[concat('vm-',parameters('hubidentifier'),'-fw-02')]",
+        "gcfNicName1": "[concat(variables('gcfVmName1'),'-nic')]",
+        "gcfNicName2": "[concat(variables('gcfVmName2'),'-nic')]",
+        "gcfPIPAddressType": "Static",
+        "lbPIPAddressName": "[concat('elb-',parameters('hubidentifier'),'-firewall-pip')]",
+        "dnsNameForCGF": "[toLower('jonscgflol')]",
+        "lbName-external": "[concat('elb-',parameters('hubidentifier'),'-firewall')]",
+        "lbName-internal": "[concat('ilb-',parameters('hubidentifier'),'-firewall')]",
+        "lbID-external": "[resourceId('Microsoft.Network/loadBalancers',variables('lbName-external'))]",
+        "lbID-internal": "[resourceId('Microsoft.Network/loadBalancers',variables('lbName-internal'))]",
+        "lbPIPID": "[resourceId('Microsoft.Network/publicIPAddresses',variables('lbPIPAddressName'))]",
+        "lbFrontEndPoolID-external": "[concat(variables('lbID-external'),'/frontendIPConfigurations/loadBalancerFrontend')]",
+        "lbFrontEndPoolID-internal": "[concat(variables('lbID-internal'),'/frontendIPConfigurations/loadBalancerFrontend')]",
+        "lbBackEndPoolID-external": "[concat(variables('lbID-external'),'/backendAddressPools/loadBalancerBackend')]",
+        "lbBackEndPoolID-internal": "[concat(variables('lbID-internal'),'/backendAddressPools/loadBalancerBackend')]",
+        "lbProbeID-external": "[concat(variables('lbID-external'),'/probes/HAProbe')]",
+        "lbProbeID-internal": "[concat(variables('lbID-internal'),'/probes/HAProbe')]",
+        "lbIPAddress-internal": "[concat( variables( 'gcfSubnetAddrSplit' )[0], '.', variables( 'gcfSubnetAddrSplit' )[1], '.', variables( 'gcfSubnetAddrSplit' )[2], '.', add( int( variables( 'gcfSubnetAddrSplit' )[3]), 4 ))]",
+        "adminUsername": "notused",
+        "singleQuotationMark": "'",
+        "gcfSubnetSplit": "[split(parameters('FirewallHubSubnetRange'), '/' )]",
+        "gcfSubnetAddrSplit": "[split( variables('gcfSubnetSplit')[0], '.' )]",
+        "gcfSubnetMask": "[variables( 'gcfSubnetSplit' )[1]]",
+        "gcfSubnetDefaultGw": "[concat( variables( 'gcfSubnetAddrSplit' )[0], '.', variables( 'gcfSubnetAddrSplit' )[1], '.', variables( 'gcfSubnetAddrSplit' )[2], '.', add( int( variables( 'gcfSubnetAddrSplit' )[3]), 1 ))]",
+        "gcfVmAddress1": "[concat( variables( 'gcfSubnetAddrSplit' )[0], '.', variables( 'gcfSubnetAddrSplit' )[1], '.', variables( 'gcfSubnetAddrSplit' )[2], '.', add( int( variables( 'gcfSubnetAddrSplit' )[3]), 5 ))]",
+        "gcfVmAddress2": "[concat( variables( 'gcfSubnetAddrSplit' )[0], '.', variables( 'gcfSubnetAddrSplit' )[1], '.', variables( 'gcfSubnetAddrSplit' )[2], '.', add( int( variables( 'gcfSubnetAddrSplit' )[3]), 6 ))]",
+        "gcfCustomData1": "[Base64(concat( '#!/bin/bash\n\n/opb/cloud-setmip ', variables('gcfVmAddress1'), ' ', variables( 'gcfSubnetMask' ), ' ', variables( 'gcfSubnetDefaultGw' ), '\n', 'echo ', variables('singleQuotationMark'), parameters( 'adminPassword' ), variables('singleQuotationMark'), ' | /opb/create-dha -s S1 -c -o ', variables('gcfVmAddress2'), ' -n ', variables( 'gcfSubnetMask' ), ' -g ', variables( 'gcfSubnetDefaultGw' ), '\n'))]",
+        "gcfCustomData2": "[Base64('\n')]",
+        "gcfCustomDataCC1": "[base64(concat('#!/bin/bash\n\n', 'echo \"*/2 * * * * root echo \\\"', parameters( 'ccSecret' ), '\\\" | /opt/phion/bin/getpar -a ', parameters('ccIpAddress'), ' -r ', parameters( 'ccRangeId' ), ' -c ', parameters( 'ccClusterName' ), ' -b ', variables( 'gcfVmName1' ), ' -d /opt/phion/update/box.par -s --verbosity 10 >> /tmp/getpar.log && /etc/rc.d/init.d/phion stop && /etc/rc.d/init.d/phion start && rm /etc/cron.d/getpar\" > /etc/cron.d/getpar\n'))]",
+        "gcfCustomDataCC2": "[base64(concat('#!/bin/bash\n\n', 'echo \"*/2 * * * * root echo \\\"', parameters( 'ccSecret' ), '\\\" | /opt/phion/bin/getpar -a ', parameters('ccIpAddress'), ' -r ', parameters( 'ccRangeId' ), ' -c ', parameters( 'ccClusterName' ), ' -b ', variables( 'gcfVmName2' ), ' -d /opt/phion/update/box.par -s --verbosity 10 >> /tmp/getpar.log && /etc/rc.d/init.d/phion stop && /etc/rc.d/init.d/phion start && rm /etc/cron.d/getpar\" > /etc/cron.d/getpar\n'))]"
+    },
+    "resources": [
+        {
+            "apiVersion": "[variables('computeApiVersion')]",
+            "type": "Microsoft.Compute/availabilitySets",
+            "name": "[variables('avName')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [],
+            "properties": {
+                "platformFaultDomainCount": 2,
+                "platformUpdateDomainCount": 5
+            },
+            "sku": {
+                "name": "Aligned"
+            }
+        },
+        {
+            "apiVersion": "[variables('networkApiVersion')]",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "name": "[variables('lbPIPAddressName')]",
+            "location": "[resourceGroup().location]",
+            "sku": {
+                "name": "Standard"
+            },
+            "properties": {
+                "publicIPAllocationMethod": "[variables('gcfPIPAddressType')]",
+                "dnsSettings": {
+                    "domainNameLabel": "[variables('dnsNameForCGF')]"
+                }
+            }
+        },
+        {
+            "apiVersion": "[variables('networkApiVersion')]",
+            "name": "[variables('lbName-external')]",
+            "type": "Microsoft.Network/loadBalancers",
+            "location": "[resourceGroup().location]",
+            "sku": {
+                "name": "Standard"
+            },
+            "comments": "External LoadBalancer for the Barracuda Next Gen Firewall F cluster",
+            "tags": {
+                "displayName": "CGFLB-External"
+            },
+            "dependsOn": [
+                "[concat('Microsoft.Network/publicIPAddresses/', variables('lbPIPAddressName'))]"
+            ],
+            "properties": {
+                "frontendIPConfigurations": [
+                    {
+                        "name": "loadBalancerFrontEnd",
+                        "properties": {
+                            "publicIPAddress": {
+                                "id": "[variables('lbPIPID')]"
+                            }
+                        }
+                    }
+                ],
+                "backendAddressPools": [
+                    {
+                        "name": "loadBalancerBackend"
+                    }
+                ],
+                "loadBalancingRules": [
+                    {
+                        "name": "App1-HTTP",
+                        "properties": {
+                            "frontendIPConfiguration": {
+                                "id": "[variables('lbFrontEndPoolID-external')]"
+                            },
+                            "backendAddressPool": {
+                                "id": "[variables('lbBackEndPoolID-external')]"
+                            },
+                            "protocol": "Tcp",
+                            "frontendPort": 80,
+                            "backendPort": 80,
+                            "enableFloatingIP": false,
+                            "idleTimeoutInMinutes": 5,
+                            "probe": {
+                                "id": "[variables('lbProbeID-external')]"
+                            }
+                        }
+                    },
+                    {
+                        "name": "core-management",
+                        "properties": {
+                            "frontendIPConfiguration": {
+                                "id": "[variables('lbFrontEndPoolID-external')]"
+                            },
+                            "backendAddressPool": {
+                                "id": "[variables('lbBackEndPoolID-external')]"
+                            },
+                            "protocol": "Tcp",
+                            "frontendPort": 3389,
+                            "backendPort": 3389,
+                            "enableFloatingIP": false,
+                            "idleTimeoutInMinutes": 5,
+                            "probe": {
+                                "id": "[variables('lbProbeID-external')]"
+                            }
+                        }
+                    }
+                ],
+                "inboundNatRules": [
+                    {
+                        "name": "core-fwmgt1",
+                        "properties": {
+                            "frontendIPConfiguration": {
+                                "id": "[variables('lbFrontEndPoolID-external')]"
+                            },
+                            "frontendPort": 801,
+                            "backendPort": 801,
+                            "enableFloatingIP": false,
+                            "idleTimeoutInMinutes": 4,
+                            "protocol": "Tcp",
+                            "enableTcpReset": false
+                        }
+                    },
+                    {
+                        "name": "core-fwmgt2",
+                        "properties": {
+                            "frontendIPConfiguration": {
+                                "id": "[variables('lbFrontEndPoolID-external')]"
+                            },
+                            "frontendPort": 807,
+                            "backendPort": 807,
+                            "enableFloatingIP": false,
+                            "idleTimeoutInMinutes": 4,
+                            "protocol": "Tcp",
+                            "enableTcpReset": false
+                        }
+                    }
+                ],
+                "outboundRules": [
+                    {
+                        "name": "NVAOutboundRule",
+                        "properties": {
+                            "allocatedOutboundPorts": 10000,
+                            "protocol": "Udp",
+                            "enableTcpReset": false,
+                            "idleTimeoutInMinutes": 4,
+                            "backendAddressPool": {
+                                "id": "[variables('lbBackEndPoolID-external')]"
+                            },
+                            "frontendIPConfigurations": [
+                                {
+                                    "id": "[variables('lbFrontEndPoolID-external')]"
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "probes": [
+                    {
+                        "name": "HAProbe",
+                        "properties": {
+                            "protocol": "Tcp",
+                            "port": 65000,
+                            "intervalInSeconds": 5,
+                            "numberOfProbes": 2
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "apiVersion": "[variables('networkApiVersion')]",
+            "name": "[variables('lbName-internal')]",
+            "type": "Microsoft.Network/loadBalancers",
+            "location": "[resourceGroup().location]",
+            "sku": {
+                "name": "Standard"
+            },
+            "dependsOn": [],
+            "comments": "Internal LoadBalancer for the Barracuda Next Gen Firewall F cluster",
+            "tags": {
+                "displayName": "CGFLB-Internal"
+            },
+            "properties": {
+                "frontendIPConfigurations": [
+                    {
+                        "name": "loadBalancerFrontEnd",
+                        "properties": {
+                            "privateIPAddress": "[variables('lbIPAddress-internal')]",
+                            "privateIPAllocationMethod": "Static",
+                            "subnet": {
+                                "id": "[variables('subnetRefCGF')]"
+                            }
+                        }
+                    }
+                ],
+                "backendAddressPools": [
+                    {
+                        "name": "loadBalancerBackend"
+                    }
+                ],
+                "loadBalancingRules": [
+                    {
+                        "name": "lbrule",
+                        "properties": {
+                            "frontendIPConfiguration": {
+                                "id": "[variables('lbFrontEndPoolID-internal')]"
+                            },
+                            "frontendPort": 0,
+                            "backendPort": 0,
+                            "enableFloatingIP": false,
+                            "idleTimeoutInMinutes": 15,
+                            "protocol": "All",
+                            "loadDistribution": "Default",
+                            "backendAddressPool": {
+                                "id": "[variables('lbBackEndPoolID-internal')]"
+                            },
+                            "probe": {
+                                "id": "[variables('lbProbeID-internal')]"
+                            }
+                        }
+                    }
+                ],
+                "probes": [
+                    {
+                        "name": "HAProbe",
+                        "properties": {
+                            "protocol": "Tcp",
+                            "port": 65000,
+                            "intervalInSeconds": 5,
+                            "numberOfProbes": 2
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "apiVersion": "[variables('networkApiVersion')]",
+            "type": "Microsoft.Network/networkInterfaces",
+            "name": "[variables('gcfNicName1')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[variables('lbID-external')]",
+                "[variables('lbID-internal')]"
+            ],
+            "properties": {
+                "enableIPForwarding": true,
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAllocationMethod": "Static",
+                            "privateIPAddress": "[variables( 'gcfVmAddress1' )]",
+                            "subnet": {
+                                "id": "[variables('subnetRefCGF')]"
+                            },
+                            "loadBalancerBackendAddressPools": [
+                                {
+                                    "id": "[variables('lbBackEndPoolID-external')]"
+                                },
+                                {
+                                    "id": "[variables('lbBackEndPoolID-internal')]"
+                                }
+                            ],
+                            "loadBalancerInboundNatRules": [
+                                {
+                                    "id": "[concat(variables('lbID-external'),'/inboundNatRules/core-fwmgt1')]"
+                                },
+                                {
+                                    "id": "[concat(variables('lbID-external'),'/inboundNatRules/core-fwmgt2')]"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "apiVersion": "[variables('networkApiVersion')]",
+            "type": "Microsoft.Network/networkInterfaces",
+            "name": "[variables('gcfNicName2')]",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[variables('lbID-external')]",
+                "[variables('lbID-internal')]"
+            ],
+            "properties": {
+                "enableIPForwarding": true,
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAllocationMethod": "Static",
+                            "privateIPAddress": "[variables( 'gcfVmAddress2' )]",
+                            "subnet": {
+                                "id": "[variables('subnetRefCGF')]"
+                            },
+                            "loadBalancerBackendAddressPools": [
+                                {
+                                    "id": "[variables('lbBackEndPoolID-external')]"
+                                },
+                                {
+                                    "id": "[variables('lbBackEndPoolID-internal')]"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "apiVersion": "[variables('computeApiVersion')]",
+            "type": "Microsoft.Compute/virtualMachines",
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "name": "[variables('gcfVmName1')]",
+            "location": "[resourceGroup().location]",
+            "plan": {
+                "name": "byol",
+                "Product": "[variables('imageOffer')]",
+                "Publisher": "[variables('imagePublisher')]"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkInterfaces/', variables('gcfNicName1'))]",
+                "[concat('Microsoft.Compute/availabilitySets/', variables('avName'))]"
+            ],
+            "properties": {
+                "availabilitySet": {
+                    "id": "[resourceId('Microsoft.Compute/availabilitySets',variables('avName'))]"
+                },
+                "hardwareProfile": {
+                    "vmSize": "[parameters('vmSize')]"
+                },
+                "osProfile": {
+                    "computerName": "[variables('gcfVmName1')]",
+                    "adminUsername": "[variables('adminUsername')]",
+                    "adminPassword": "[parameters('adminPassword')]",
+                    "customData": "[if(equals(parameters('ccManaged'), 'yes'), variables('gcfCustomDataCC1'), variables('gcfCustomData1'))]"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "[variables('imagePublisher')]",
+                        "offer": "[variables('imageOffer')]",
+                        "sku": "byol",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "name": "[concat(variables('gcfVmName1'),'-osdisk')]",
+                        "caching": "ReadWrite",
+                        "createOption": "FromImage"
+                    }
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('gcfNicName1'))]",
+                            "properties": {
+                                "primary": true
+                            }
+                        }
+                    ]
+                }
+            },
+            "resources": []
+        },
+        {
+            "apiVersion": "[variables('computeApiVersion')]",
+            "type": "Microsoft.Compute/virtualMachines",
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "name": "[variables('gcfVmName2')]",
+            "location": "[resourceGroup().location]",
+            "plan": {
+                "name": "byol",
+                "Product": "[variables('imageOffer')]",
+                "Publisher": "[variables('imagePublisher')]"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkInterfaces/', variables('gcfNicName2'))]",
+                "[concat('Microsoft.Compute/availabilitySets/', variables('avName'))]"
+            ],
+            "properties": {
+                "availabilitySet": {
+                    "id": "[resourceId('Microsoft.Compute/availabilitySets',variables('avName'))]"
+                },
+                "hardwareProfile": {
+                    "vmSize": "[parameters('vmSize')]"
+                },
+                "osProfile": {
+                    "computerName": "[variables('gcfVmName2')]",
+                    "adminUsername": "[variables('adminUsername')]",
+                    "adminPassword": "[parameters('adminPassword')]",
+                    "customData": "[if(equals(parameters('ccManaged'), 'yes'), variables('gcfCustomDataCC2'), variables('gcfCustomData2'))]"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "[variables('imagePublisher')]",
+                        "offer": "[variables('imageOffer')]",
+                        "sku": "byol",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "name": "[concat(variables('gcfVmName2'),'-osdisk')]",
+                        "caching": "ReadWrite",
+                        "createOption": "FromImage"
+                    }
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('gcfNicName2'))]",
+                            "properties": {
+                                "primary": true
+                            }
+                        }
+                    ]
+                }
+            },
+            "resources": []
+        }
+    ]
+}
