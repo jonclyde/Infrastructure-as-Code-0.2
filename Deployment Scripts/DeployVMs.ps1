@@ -30,6 +30,7 @@ Param(
     Write-Host "Section 0 - Pre-requisites and set variables"
     Write-Host "--------------------------------"
     $BarracudaTemplateFile = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, "..\nested templates\Barracuda CGF\barracuda.json"))
+    $CentralParametersFile = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, "..\Parameters\central.parameters.json"))
 
     if($DeployType -eq "firewall" -and $spoke -ne "hub"){
         Write-Host "Parameters are invalid. Deploy type is firewall but spoke is not set to hub"
@@ -54,6 +55,7 @@ Param(
 
             New-AzResourceGroupDeployment -TemplateFile $BarracudaTemplateFile `
                                           -ResourceGroupName $FWRGNamePrimary `
+                                          -TemplateParametersFile $CentralParametersFile `
                                           -Identifier $Identifier `
                                           -VNFirewallRG $FWVNRGPrimary `
                                           -EnvironmentIdentifier $EnvironmentIdentifier `
@@ -74,6 +76,7 @@ Param(
 
                 New-AzResourceGroupDeployment -TemplateFile $BarracudaTemplateFile `
                                             -ResourceGroupName $FWRGNameDR `
+                                            -TemplateParametersFile $CentralParametersFile `
                                             -Identifier $Identifier `
                                             -VNFirewallRG $FWVNRGDR `
                                             -EnvironmentIdentifier $EnvironmentIdentifier `
