@@ -2,11 +2,13 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "DefaultPW":{
-            "keyVault": {
-                "id": "/subscriptions/847f0a11-c32e-4c42-8d99-ae7bb0dd6b59/resourceGroups/rg-pr-core-key/providers/Microsoft.KeyVault/vaults/kv-pr-core"
-            },
-            "secretName": "DefaultPw"
+        "DefaultPw": {
+            "reference": {
+                "keyVault": {
+                    "id": "/subscriptions/847f0a11-c32e-4c42-8d99-ae7bb0dd6b59/resourceGroups/rg-pr-core-key/providers/Microsoft.KeyVault/vaults/kv-pr-core"
+                },
+                "secretName": "DefaultPw"
+            }
         },
         "VNETPeerings": {
             "value": [
