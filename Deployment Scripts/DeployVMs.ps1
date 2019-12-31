@@ -29,7 +29,7 @@ Param(
     Write-Host "--------------------------------"
     Write-Host "Section 0 - Pre-requisites and set variables"
     Write-Host "--------------------------------"
-    $BarracudaTemplateFile = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, "..\nested templates\virtual network\VirtualNetworkPrimary.json"))
+    $BarracudaTemplateFile = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, "..\nested templates\Barracuda CGF\barracuda.json"))
     
     if($DeployType -eq "firewall" -and $spoke -ne "hub"){
         Write-Host "Parameters are invalid. Deploy type is firewall but spoke is not set to hub"
