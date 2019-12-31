@@ -55,7 +55,7 @@ Param(
 
             New-AzResourceGroupDeployment -TemplateFile $BarracudaTemplateFile `
                                           -ResourceGroupName $FWRGNamePrimary `
-                                          -TemplateParametersFile $CentralParametersFile `
+                                          -TemplateParameterFile $CentralParametersFile `
                                           -Identifier $Identifier `
                                           -VNFirewallRG $FWVNRGPrimary `
                                           -EnvironmentIdentifier $EnvironmentIdentifier `
@@ -76,7 +76,7 @@ Param(
 
                 New-AzResourceGroupDeployment -TemplateFile $BarracudaTemplateFile `
                                             -ResourceGroupName $FWRGNameDR `
-                                            -TemplateParametersFile $CentralParametersFile `
+                                            -TemplateParameterFile $CentralParametersFile `
                                             -Identifier $Identifier `
                                             -VNFirewallRG $FWVNRGDR `
                                             -EnvironmentIdentifier $EnvironmentIdentifier `
