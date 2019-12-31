@@ -431,7 +431,7 @@
                 "osProfile": {
                     "computerName": "[variables('gcfVmName1')]",
                     "adminUsername": "[variables('adminUsername')]",
-                    "adminPassword": "[parameters('adminPassword')]",
+                    "adminPassword": "[parameters('DefaultPw')]",
                     "customData": "[if(equals(parameters('ccManaged'), 'yes'), variables('gcfCustomDataCC1'), variables('gcfCustomData1'))]"
                 },
                 "storageProfile": {
