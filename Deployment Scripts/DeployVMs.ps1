@@ -48,7 +48,7 @@ Param(
             Write-Host "DeployFW parameter is set to true. Primary firewalls will now be deployed"
 
             $FWRGNamePrimary = "rg-pr-" + $identifier + "-fw"
-            $FWVNRGPrimary = "rg-pr-" + $identifier + "-fw"
+            $FWVNRGPrimary = "rg-pr-" + $identifier
             $EnvironmentIdentifier = "pr"
 
             New-AzResourceGroup -Name $FWRGNamePrimary -Location $LocationPrimary -Force
@@ -69,7 +69,7 @@ Param(
                 Write-Host "DeployDR parameter is set to true. Primary firewalls will now be deployed"
 
                 $FWRGNameDR = "rg-dr-" + $identifier + "-fw"
-                $FWVNRGDR = "rg-dr-" + $identifier + "-fw"
+                $FWVNRGDR = "rg-dr-" + $identifier
                 $EnvironmentIdentifier = "dr"
 
                 New-AzResourceGroup -Name $FWRGNameDR -Location $LocationDR -Force
