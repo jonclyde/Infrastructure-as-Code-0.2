@@ -9,14 +9,6 @@
                 },
                 "secretName": "DefaultPw"
             }
-        },
-        "VNETPeerings": {
-            "value": [
-                {
-                    "spokeIdentifier1": "hub",
-                    "spokeIdentifier2": "spoke1"
-                }
-            ]
         }
     }
 }
