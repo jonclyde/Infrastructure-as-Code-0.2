@@ -2,8 +2,14 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "adminPassword": {
+        "DefaultPw": {
             "type": "securestring"
+        },
+        "Identifier": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the Resource Group of the VNET (e.g. CUDA-RG-VNET)"
+            }
         },
         "VNFirewallRG": {
             "type": "string",
@@ -11,7 +17,10 @@
                 "description": "Name of the Resource Group of the VNET (e.g. CUDA-RG-VNET)"
             }
         },
-        "FirewallHubSubnetIdentifier": {
+        "EnvironmentIdentifier": {
+            "type": "string"
+        },
+        "FirewallHubSubnetName": {
             "type": "string",
             "metadata": {
                 "description": "Name of the Subnet containing the CloudGen Firewall (e.g. cuda-subnet-gcf)"
@@ -22,9 +31,6 @@
             "metadata": {
                 "description": "Network range of the Subnet containing the CloudGen Firewall (e.g. 172.16.136.0/24)"
             }
-        },
-        "hubidentifier": {
-            "type": "string"
         },
         "vmSize": {
             "type": "string"
@@ -57,21 +63,21 @@
     "variables": {
         "computeApiVersion": "2019-03-01",
         "networkApiVersion": "2019-04-01",
-        "vnetName": "[concat('vnet-',parameters('hubidentifier'),'-infrastructure')]",
         "imagePublisher": "barracudanetworks",
         "imageOffer": "barracuda-ng-firewall",
-        "avName": "[concat('as-',parameters('hubidentifier'),'-firewall')]",
-        "vnetID": "[resourceId(parameters('vnetResourceGroup'),'Microsoft.Network/virtualNetworks',variables('vnetname'))]",
-        "subnetRefCGF": "[concat(variables('vnetID'),'/subnets/','sn-',parameters('FirewallHubSubnetIdentifier'))]",
-        "gcfVmName1": "[concat('vm-',parameters('hubidentifier'),'-fw-01')]",
-        "gcfVmName2": "[concat('vm-',parameters('hubidentifier'),'-fw-02')]",
+        "avName": "[concat('as-',parameters('Identifier'),'-firewall')]",
+        "FWVNName": "[concat('vn-',parameters('EnvironmentIdentifier'),'-',parameters('Identifier'))]",
+        "vnetID": "[resourceId(parameters('VNFirewallRG'),'Microsoft.Network/virtualNetworks',variables('FWVNName'))]",
+        "subnetRefCGF": "[concat(variables('vnetID'),'/subnets/',parameters('FirewallHubSubnetName'))]",
+        "gcfVmName1": "[concat('vm-',parameters('EnvironmentIdentifier'),'-',parameters('Identifier'),'-fw-01')]",
+        "gcfVmName2": "[concat('vm-',parameters('EnvironmentIdentifier'),'-',parameters('Identifier'),'-fw-02')]",
         "gcfNicName1": "[concat(variables('gcfVmName1'),'-nic')]",
         "gcfNicName2": "[concat(variables('gcfVmName2'),'-nic')]",
         "gcfPIPAddressType": "Static",
-        "lbPIPAddressName": "[concat('elb-',parameters('hubidentifier'),'-firewall-pip')]",
+        "lbPIPAddressName": "[concat('elb-',parameters('EnvironmentIdentifier'),'-',parameters('Identifier'),'-fw-pip')]",
         "dnsNameForCGF": "[toLower('jonscgflol')]",
-        "lbName-external": "[concat('elb-',parameters('hubidentifier'),'-firewall')]",
-        "lbName-internal": "[concat('ilb-',parameters('hubidentifier'),'-firewall')]",
+        "lbName-external": "[concat('elb-',parameters('EnvironmentIdentifier'),'-',parameters('Identifier'),'-fw')]",
+        "lbName-internal": "[concat('ilb-',parameters('EnvironmentIdentifier'),'-',parameters('Identifier'),'-fw')]",
         "lbID-external": "[resourceId('Microsoft.Network/loadBalancers',variables('lbName-external'))]",
         "lbID-internal": "[resourceId('Microsoft.Network/loadBalancers',variables('lbName-internal'))]",
         "lbPIPID": "[resourceId('Microsoft.Network/publicIPAddresses',variables('lbPIPAddressName'))]",

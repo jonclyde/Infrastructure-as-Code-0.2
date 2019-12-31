@@ -20,6 +20,8 @@ Param(
         [Parameter(Mandatory=$true)]
         $FirewallHubSubnetRangeDR,
         [Parameter(Mandatory=$true)]
+        $DefaultVMSize,
+        [Parameter(Mandatory=$true)]
         $LocationPrimary,
         [Parameter(Mandatory=$true)]
         $LocationDR
@@ -45,19 +47,39 @@ Param(
             Write-Host "DeployFW parameter is set to true. Primary firewalls will now be deployed"
 
             $FWRGNamePrimary = "rg-pr-" + $identifier + "-fw"
-            $FWVNRGPrimary = "rg-pr-" + $identifier
+            $FWVNRGPrimary = "rg-pr-" + $identifier + "-fw"
+            $EnvironmentIdentifier = "pr"
 
             New-AzResourceGroup -Name $RGNamePrimary -Location $LocationPrimary -Force
 
             New-AzResourceGroupDeployment -TemplateFile $BarracudaTemplateFile `
                                           -ResourceGroupName $FWRGNamePrimary `
-                                          -VNFirewallRG $FWVNRGPrimary
-                                          -FirewallHubSubnetIdentifier $FirewallHubSubnetIdentifier `
+                                          -Identifier $Identifier `
+                                          -VNFirewallRG $FWVNRGPrimary `
+                                          -EnvironmentIdentifier $EnvironmentIdentifier `
+                                          -FirewallHubSubnetName $FirewallHubSubnetName `
+                                          -FirewallHubSubnetRange $FirewallHubSubnetRangePrimary `
+                                          -VMSize $DefaultVMSize
 
 
             if($DeployDR -eq $true){
 
+                Write-Host "DeployDR parameter is set to true. Primary firewalls will now be deployed"
+
                 $FWRGNameDR = "rg-dr-" + $identifier + "-fw"
+                $FWVNRGDR = "rg-dr-" + $identifier + "-fw"
+                $EnvironmentIdentifier = "dr"
+
+                New-AzResourceGroup -Name $FWRGNameDR -Location $LocationDR -Force
+
+                New-AzResourceGroupDeployment -TemplateFile $BarracudaTemplateFile `
+                                            -ResourceGroupName $FWRGNameDR `
+                                            -Identifier $Identifier `
+                                            -VNFirewallRG $FWVNRGDR `
+                                            -EnvironmentIdentifier $EnvironmentIdentifier `
+                                            -FirewallHubSubnetName $FirewallHubSubnetName `
+                                            -FirewallHubSubnetRange $FirewallHubSubnetRangeDR `
+                                            -VMSize $DefaultVMSize
             }
 
          }
