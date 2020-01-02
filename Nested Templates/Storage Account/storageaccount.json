@@ -1,0 +1,81 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "StorageAccounts": {
+            "type": "array"
+        },
+        "BlobContainers": {
+            "type": "array"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "name": "[parameters('StorageAccounts')[CopyIndex()].SAName]",
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2019-04-01",
+            "sku": {
+                "name": "[parameters('StorageAccounts')[CopyIndex()].sku]",
+                "tier": "[parameters('StorageAccounts')[CopyIndex()].tier]"
+            },
+            "kind": "[parameters('StorageAccounts')[CopyIndex()].kind]",
+            "location": "[resourceGroup().location]",
+            "identity": {
+                "type": "SystemAssigned"
+            },
+            "properties": {
+                "networkAcls": {
+                    "bypass": "AzureServices",
+                    "virtualNetworkRules": [],
+                    "defaultAction": "Allow"
+                },
+                "accessTier": "Hot",
+                "supportsHttpsTrafficOnly": true
+            },
+            "resources": [],
+            "copy": {
+                "name": "StorageAccounts",
+                "count": "[length(parameters('StorageAccounts'))]"
+            }
+        },
+        {
+            "type": "Microsoft.Storage/storageAccounts/blobServices",
+            "name": "[concat(parameters('BlobContainers')[CopyIndex()].StorageAccount,'/default')]",
+            "apiVersion": "2019-04-01",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('BlobContainers')[CopyIndex()].StorageAccount)]"
+            ],
+            "properties": {
+                "cors": {
+                    "corsRules": []
+                },
+                "deleteRetentionPolicy": {
+                    "enabled": false
+                }
+            },
+            "copy": {
+                "name": "StorageAccounts",
+                "count": "[length(parameters('BlobContainers'))]"
+            }
+        },
+        {
+            "name": "[concat(parameters('BlobContainers')[CopyIndex()].StorageAccount,'/default/',parameters('BlobContainers')[CopyIndex()].ContainerName)]",
+            "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+            "apiVersion": "2019-04-01",
+            "dependsOn": [
+                "[resourceId('Microsoft.Storage/storageAccounts', parameters('BlobContainers')[CopyIndex()].StorageAccount)]",
+                "[resourceId('Microsoft.Storage/storageAccounts/blobServices', parameters('BlobContainers')[CopyIndex()].StorageAccount, 'default')]"
+            ],
+            "properties": {
+                "publicAccess": "None"
+            },
+            "copy": {
+                "name": "BlobContainers",
+                "count": "[length(parameters('BlobContainers'))]",
+                "mode": "serial"
+            }
+        }
+    ],
+    "outputs": {}
+}

@@ -1,0 +1,40 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "StorageAccounts": {
+            "value": [
+                {
+                    "SAName": "joncgeneral",
+                    "sku": "Standard_LRS",
+                    "tier": "Standard",
+                    "kind": "StorageV2"
+                },
+                {
+                    "SAName": "joncfiles",
+                    "sku": "Standard_LRS",
+                    "tier": "Standard",
+                    "kind": "StorageV2"
+                },
+                {
+                    "SAName": "joncdiag",
+                    "sku": "Standard_LRS",
+                    "tier": "Standard",
+                    "kind": "StorageV2"
+                }
+            ]
+        },
+        "BlobContainers": {
+            "value": [
+                {
+                    "StorageAccount": "joncgeneral",
+                    "ContainerName": "blobexample"
+                },
+                {
+                    "StorageAccount": "joncdiag",
+                    "ContainerName": "vmdiagnostics"
+                }
+            ]
+        }
+    }
+}

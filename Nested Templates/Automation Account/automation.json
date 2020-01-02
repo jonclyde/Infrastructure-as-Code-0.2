@@ -1,0 +1,116 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "identifier": {
+            "type": "string",
+            "defaultValue": "core"
+        },
+        "EnvironmentIdentifier":{
+            "type": "string"
+        },
+        "RandomInteger":{
+            "type": "string"
+        },
+        "DefaultUsername": {
+            "type": "string"
+        },
+        "DefaultPw": {
+            "type": "securestring"
+        },
+        "dscConfigurations": {
+            "type": "array"
+        },
+        "AutomationStorageAccount": {
+            "type":"string"
+        }
+    },
+    "variables": {
+        "a-accname":"[concat('aa-',parameters('EnvironmentIdentifier'),'-',parameters('identifier'),'-aut-01')]",
+        "DscBlobContainer":"[concat('https://',parameters('AutomationStorageAccount'),'.blob.core.windows.net/dscconfigurations/')]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Automation/automationAccounts",
+            "apiVersion": "2015-10-31",
+            "name": "[variables('a-accname')]",
+            "location": "westeurope",
+            "properties": {
+                "Sku": {
+                    "name": "OMS"
+                }
+            }
+        },
+        {
+            "name": "[concat(variables('a-accname'),'/domainCredential')]",
+            "type": "Microsoft.Automation/automationAccounts/credentials",
+            "apiVersion": "2018-01-15",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[variables('a-accname')]"
+            ],
+            "properties": {
+                "userName": "[parameters('DefaultUsername')]",
+                "password": "[parameters('DefaultPw')]"
+            }
+        },
+        {
+            "name": "[concat(variables('a-accname'),'/safeModeCredential')]",
+            "type": "Microsoft.Automation/automationAccounts/credentials",
+            "apiVersion": "2018-01-15",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[variables('a-accname')]"
+            ],
+            "properties": {
+                "userName": "[parameters('DefaultUsername')]",
+                "password": "[parameters('DefaultPw')]"
+            }
+        },
+        {
+            "name": "[concat(variables('a-accname'),'/',parameters('dscConfigurations')[CopyIndex()].ConfigName)]",
+            "type": "Microsoft.Automation/automationAccounts/configurations",
+            "apiVersion": "2018-01-15",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[variables('a-accname')]"
+            ],
+            "properties": {
+                "state": "Published",
+                "overwrite": "true",
+                "source": {
+                    "type": "uri",
+                    "value": "[concat(variables('DscBlobContainer'),parameters('dscConfigurations')[CopyIndex()].ConfigFileName)]"
+                }
+            },
+            "copy": {
+                "name": "configurations",
+                "count": "[length(parameters('dscConfigurations'))]",
+                "mode": "Serial"
+            }
+        },
+        {
+            "name": "[concat(variables('a-accname'),'/compilation',parameters('dscConfigurations')[CopyIndex()].ConfigName)]",
+            "type": "Microsoft.Automation/automationAccounts/compilationjobs",
+            "apiVersion": "2018-01-15",
+            "tags": {},
+            "dependsOn": [
+                "[variables('a-accname')]",
+                "[parameters('dscConfigurations')[CopyIndex()].ConfigName]"
+            ],
+            "properties": {
+                "configuration": {
+                    "name": "[parameters('dscConfigurations')[CopyIndex()].ConfigName]"
+                },
+                "parameters": {}
+            },
+            "copy": {
+                "name": "compilation",
+                "count": "[length(parameters('dscConfigurations'))]",
+                "mode": "Serial"
+            }
+        }
+
+    ],
+    "outputs": {}
+}
