@@ -2,58 +2,17 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "identifier":{
-            "type": "string"
-        },
-        "DeployDR": {
-            "type": "string"
-        },
-        "RandomInteger":{
-            "type": "string"
-        },
-        "LocationPrimary":{
-            "type": "string"
-        },
-        "LocationDR":{
+        "RSVName":{
             "type": "string"
         }
     },
-    "variables": {
-        "NameRSVPr": "[concat('rsv-pr',parameters('identifier'),'-backup-',parameters('RandomInteger'))]",
-        "NameRSVDr": "[concat('rsv-dr',parameters('identifier'),'-backup-',parameters('RandomInteger'))]",
-        "NameRSVASR": "[concat('rsv-dr',parameters('identifier'),'-asr-',parameters('RandomInteger'))]"
-
-    },
+    "variables": {},
     "resources": [
         {
-            "name": "[concat(variables('NameRSVPr'))]",
+            "name": "[concat(parameters('RSVName'))]",
             "type": "Microsoft.RecoveryServices/vaults",
             "apiVersion": "2016-06-01",
-            "location": "[parameters('LocationPrimary')]",
-            "properties": {},
-            "sku": {
-                "name": "RS0",
-                "tier": "Standard"
-            }
-        },
-        {
-            "name": "[concat(variables('NameRSVDr'))]",
-            "type": "Microsoft.RecoveryServices/vaults",
-            "condition": "[equals(parameters('DeployDR'),'true')]",
-            "apiVersion": "2016-06-01",
-            "location": "[parameters('LocationDR')]",
-            "properties": {},
-            "sku": {
-                "name": "RS0",
-                "tier": "Standard"
-            }
-        },
-        {
-            "name": "[concat(variables('NameRSVASR'))]",
-            "type": "Microsoft.RecoveryServices/vaults",
-            "condition": "[equals(parameters('DeployDR'),'true')]",
-            "apiVersion": "2016-06-01",
-            "location": "[parameters('LocationDR')]",
+            "location": "[resourceGroup().location]",
             "properties": {},
             "sku": {
                 "name": "RS0",

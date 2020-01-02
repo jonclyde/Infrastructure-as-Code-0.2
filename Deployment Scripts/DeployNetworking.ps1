@@ -33,10 +33,10 @@ Param(
         Write-Host "--------------------------------"
 
         #Deploy the hub or spoke
-        $RGNamePrimary = "rg-pr-" + $Identifier
-        $RGNameDR = "rg-dr-" + $Identifier 
-        $VNNamePrimary = "vn-pr-" + $Identifier
-        $VNNameDR = "vn-dr-" + $Identifier 
+        $RGNamePrimary = "rg-pr-" + $Identifier + "-inf"
+        $RGNameDR = "rg-dr-" + $Identifier + "-inf"
+        $VNNamePrimary = "vn-pr-" + $Identifier + "-inf"
+        $VNNameDR = "vn-dr-" + $Identifier + "-inf"
         
         New-AzResourceGroup -Name $RGNamePrimary -Location $LocationPrimary -Force
 
