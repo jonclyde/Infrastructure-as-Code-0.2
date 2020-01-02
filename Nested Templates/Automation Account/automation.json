@@ -9,9 +9,6 @@
         "EnvironmentIdentifier":{
             "type": "string"
         },
-        "RandomInteger":{
-            "type": "string"
-        },
         "DefaultUsername": {
             "type": "string"
         },
