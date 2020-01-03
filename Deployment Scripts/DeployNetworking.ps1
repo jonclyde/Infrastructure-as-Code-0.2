@@ -75,7 +75,7 @@ Param(
             New-AzResourceGroupDeployment -TemplateFile $NetPeerTemplateFile -ResourceGroupName $RGNameHubPrimary -VN1Name $VNNameHubPrimary -VN2Name $VNNamePrimary -VN2RG $RGNamePrimary
         
             $VNNameHubDR = "vn-dr-" + $IdentifierforHub
-            $RGNameHubDR = "rg-dr-" + $IdentifierforHub 
+            $RGNameHubDR = "rg-dr-" + $IdentifierforHub + "-inf"
 
             Write-Host "Deploy vnet peering between $VNNamePrimary and $VNNameHubPrimary"
 
