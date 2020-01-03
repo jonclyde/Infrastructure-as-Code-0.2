@@ -68,7 +68,7 @@ Param(
         else{
 
             $VNNameHubPrimary = "vn-pr-" + $IdentifierforHub
-            $RGNameHubPrimary = "rg-pr-" + $IdentifierforHub
+            $RGNameHubPrimary = "rg-pr-" + $IdentifierforHub + "-inf"
 
             Write-Host "Deploy vnet peering between $VNNamePrimary and $VNNameHubPrimary"
 
