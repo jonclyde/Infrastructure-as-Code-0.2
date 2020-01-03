@@ -15,3 +15,5 @@ New-AzResourceGroupDeployment -TemplateFile ".\Storage Account\storageaccount.js
 New-AzResourceGroupDeployment -TemplateFile ".\Log Analytics\workspace.json" -ResourceGroupName "az-core-recovery" -identifier "core" -RandomInteger "43278423"
 
 New-AzResourceGroupDeployment -TemplateFile ".\Azure Backup\vault.json" -ResourceGroupName "az-core-recovery" -identifier "core" -RandomInteger "43278423" -DeployDR "true" -LocationPrimary "westeurope" -LocationDR "northeurope"
+
+.\DeployAzureBackup.ps1 -identifier "core" -DeployDR "true" -LocationPrimary "westeurope" -LocationDR "northeurope"

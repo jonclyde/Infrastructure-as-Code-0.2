@@ -2,8 +2,6 @@ Param(
         [Parameter(Mandatory=$true)]
         $identifier,
         [Parameter(Mandatory=$true)]
-        $EnvironmentIdentifier,
-        [Parameter(Mandatory=$true)]
         $DeployDR,
         [Parameter(Mandatory=$true)]
         $LocationPrimary,
