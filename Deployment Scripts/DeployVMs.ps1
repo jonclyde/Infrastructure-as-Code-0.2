@@ -194,14 +194,15 @@ Param(
                                       -version $version
                                       -subnetName $subnetName
 
-        #VM specific changes 
+        <#
+        #VM spe<cific changes 
         $vmlist = (Get-Content $VMsParamFile | convertfrom-json).parameters.vmstodeploy.value | Where-Object{$_.serviceIdentifier -eq $serviceidentifier}
         
 
         
         New-AzResourceGroupDeployment -AutomationRG $AutomationRG -AutomationAccName $AutomationAccName -ResourceGroupName $serviceRGName -TemplateParameterFile $SpokeVMsParamFile -TemplateFile $DSCTemplateFile -Location $location -ServiceIdentifier $serviceidentifier
 
-        <#   
+         
         Write-Host "Cycling through VMs for other changes..."
 
         ForEach($VM in $vmlist){

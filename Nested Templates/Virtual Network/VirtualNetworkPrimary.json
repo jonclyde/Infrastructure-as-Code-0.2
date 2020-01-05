@@ -8,6 +8,21 @@
         "VNAddressRangeDR": {
             "type": "string"
         },
+        "DataDiskstoDeploy": {
+            "type": "array"
+        },
+        "DSCConfigurations": {
+            "type": "array"
+        },
+        "DefaultPw": {
+            "type": "string"
+        },
+        "Services": {
+            "type": "array"
+        },
+        "VMstoDeploy": {
+            "type": "array"
+        },
         "identifier": {
             "type": "string"
         },
