@@ -16,15 +16,110 @@
                     "subnetAddressRangeDR": "10.1.0.0/27"
                 },
                 {
-                    "subnetName": "mgmt",
+                    "subnetName": "management",
                     "subnetAddressRangePrimary": "10.0.0.64/27",
                     "subnetAddressRangeDR": "10.1.0.64/27"
                 },
                 {
-                    "subnetName": "addc",
+                    "subnetName": "domain",
                     "subnetAddressRangePrimary": "10.0.0.128/27",
                     "subnetAddressRangeDR": "10.1.0.128/27"
                 }
+            ]
+        },
+        "DefaultPw": {
+            "reference": {
+                "keyVault": {
+                    "id": "/subscriptions/847f0a11-c32e-4c42-8d99-ae7bb0dd6b59/resourceGroups/rg-pr-core-key/providers/Microsoft.KeyVault/vaults/kv-pr-core"
+                },
+                "secretName": "DefaultPw"
+            }
+        },
+        "Services": {
+            "value": [
+                {
+                    "Identifier": "dc",
+                    "subnetName": "domain",                    
+                    "OS":"WS2019",
+                    "loadBalancer": false,
+                    "LBType": ""
+                },
+                {
+                    "Identifier": "mgt",
+                    "subnetName": "management",                    
+                    "OS":"WS2019",
+                    "loadBalancer": false,
+                    "LBType": ""
+                }
+            ]
+        },
+        "VMstoDeploy": {
+            "value": [
+                {
+                    "serviceIdentifier": "dc",
+                    "VMName": "vm-pr-core-dc01",
+                    "publicIP": false
+                },
+                {
+                    "serviceIdentifier": "dc",
+                    "VMName": "vm-pr-core-dc02",
+                    "OS":"WS2019",
+                    "publicIP": false
+                },
+                {
+                    "serviceIdentifier": "mgt",
+                    "VMName": "vm-pr-core-jb01",
+                    "OS":"WS2019",
+                    "publicIP": false
+                }
+            ]
+        },
+        "DataDiskstoDeploy": {
+            "value": [
+                {
+                    "serviceIdentifier": "dc",
+                    "VMName": "vm-pr-core-dc01",
+                    "diskSizeGB": 32,
+                    "lun": 0
+                },
+                {
+                    "serviceIdentifier": "dc",
+                    "VMName": "vm-pr-core-dc01",
+                    "diskSizeGB": 32,
+                    "lun": 1
+                },
+                {
+                    "serviceIdentifier": "dc",
+                    "VMName": "vm-pr-core-dc02",
+                    "diskSizeGB": 32,
+                    "lun": 0
+                },
+                {
+                    "serviceIdentifier": "dc",
+                    "VMName": "vm-pr-core-dc02",
+                    "diskSizeGB": 32,
+                    "lun": 1
+                }
+            ]
+        },
+        "DSCConfigurations":{
+            "value":[
+                {
+                    "serviceIdentifier":"dc",
+                    "VMName":"vm-pr-core-dc01",
+                    "DSCConfigurationName":"ADRole"
+                },
+                {
+                    "serviceIdentifier":"dc",
+                    "VMName":"vm-pr-core-dc02",
+                    "DSCConfigurationName":"ADRole"
+                },
+                {
+                    "serviceIdentifier":"mgt",
+                    "VMName":"vm-pr-core-jb01",
+                    "DSCConfigurationName":"RSATFeature"
+                }
+                
             ]
         }
     }

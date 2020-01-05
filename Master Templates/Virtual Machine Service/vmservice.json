@@ -1,0 +1,183 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "VNAddressRangePrimary":{
+            "value": "string"
+        },
+        "VNAddressRangeDR":{
+            "value": "string"
+        },
+        "SubnetstoDeploy": {
+            "type": "array"
+        },
+        "Services": {
+            "type": "array"
+        },
+        "VMstoDeploy": {
+            "type": "array"
+        },
+        "DataDiskstoDeploy": {
+            "type": "array"
+        },
+        "DSCConfigurations": {
+            "type": "array"
+        },
+        "ServiceIdentifier":{
+            "type": "string"
+        },
+        "AppSecGroupName":{
+            "type": "string"
+        },
+        "AVSetName":{
+            "type": "string"
+        },
+        "NameforVnetRG": {
+            "type": "string"
+        },
+        "NameforVnet": {
+            "type": "string"
+        },
+        "subnetName":{
+            "type": "string"
+        },
+        "DefaultUsername": {
+            "type": "string"
+        },
+        "DefaultPw": {
+            "type": "string"
+        },
+        "VMSize":{
+            "type": "string"
+        },
+        "publisher":{
+            "type": "string"
+        },
+        "offer":{
+            "type": "string"
+        },
+        "sku":{
+            "type": "string"
+        },
+        "version":{
+            "type": "string"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "name": "[parameters('AVSetName')]",
+            "type": "Microsoft.Compute/availabilitySets",
+            "apiVersion": "2019-03-01",
+            "location": "[resourcegroup().location]",
+            "condition": "[equals(parameters('services')[CopyIndex()].Identifier,parameters('ServiceIdentifier'))]",
+            "tags": {},
+            "properties": {
+                "platformUpdateDomainCount": "5",
+                "platformFaultDomainCount": "2",
+                "virtualMachines": []
+            },
+            "sku": {
+                "name": "Aligned"
+            },
+            "copy": {
+                "name": "avsets",
+                "count": "[length(parameters('services'))]"
+            }
+        },
+        {
+            "type": "Microsoft.Network/applicationSecurityGroups",
+            "apiVersion": "2019-04-01",
+            "name": "[parameters('AppSecGroupName')]",
+            "location": "[resourcegroup().location]",
+            "properties": {}
+        },
+        {
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2018-11-01",
+            "name": "[concat(parameters('VMstoDeploy')[CopyIndex()].VMName,'-nic')]",
+            "location": "[resourcegroup().location]",
+            "condition": "[equals(parameters('VMstoDeploy')[CopyIndex()].serviceIdentifier,parameters('serviceidentifier'))]",
+            "dependsOn": [
+                "[resourceid('Microsoft.Network/applicationSecurityGroups',parameters('AppSecGroupName'))]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAllocationMethod": "Dynamic",
+                            "subnet": {
+                                "id": "[concat(resourceId(parameters('NameforVnetRG'),'Microsoft.Network/virtualNetworks',parameters('NameforVnet')),'/subnets/',parameters('subnetName'))]"
+
+                            },
+                            "applicationSecurityGroups": [
+                                {
+                                    "id": "[resourceid('Microsoft.Network/applicationSecurityGroups',parameters('AppSecGroupName'))]"
+                                }
+                            ]
+                        }
+                    }
+                ]
+            },
+            "copy": {
+                "name": "networkinterfaces",
+                "count": "[length(parameters('VMstoDeploy'))]"
+            }
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2018-10-01",
+            "name": "[parameters('VMstoDeploy')[CopyIndex()].VMName]",
+            "location": "[resourcegroup().location]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkInterfaces/', concat(parameters('VMstoDeploy')[CopyIndex()].VMName,'-nic'))]"
+            ],
+            "zones": "[parameters('VMstoDeploy')[CopyIndex()].AvailabilityZone]",
+            "condition": "[equals(parameters('VMstoDeploy')[CopyIndex()].serviceIdentifier,parameters('serviceidentifier'))]",
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[parameters('VMSize')]"
+                },
+                "osProfile": {
+                    "computerName": "[parameters('VMstoDeploy')[CopyIndex()].VMName]",
+                    "adminUsername": "[parameters('DefaultUsername')]",
+                    "adminPassword": "[parameters('DefaultPw')]"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "[parameters('publisher')]",
+                        "offer": "[parameters('offer')]",
+                        "sku": "[parameters('sku')]",
+                        "version": "[parameters('version')]"
+                    },
+                    "osDisk": {
+                        "createOption": "FromImage",
+                        "name": "[concat(parameters('VMstoDeploy')[CopyIndex()].VMName,'-OSDisk')]"
+                    }
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces',concat(parameters('VMstoDeploy')[CopyIndex()].VMName,'-nic'))]"
+                        }
+                    ]
+                },
+                "diagnosticsProfile": {
+                    "bootDiagnostics": {
+                        "enabled": false
+                    }
+                },
+                "availabilitySet": {
+                    "id": "[resourceId('Microsoft.Compute/availabilitySets',parameters('AVSetName'))]"
+                }
+            },
+            "copy": {
+                "name": "vmdeployments",
+                "count": "[length(parameters('VMstoDeploy'))]"
+            },
+            "resources": []
+        }
+    ],
+    "outputs": {}
+}
