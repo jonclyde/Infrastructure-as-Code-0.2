@@ -40,6 +40,7 @@ Param(
         
         New-AzResourceGroup -Name $RGNamePrimary -Location $LocationPrimary -Force
 
+        "Deploying PR $NetTemplateFilePrimary"
         New-AzResourceGroupDeployment -TemplateParameterFile $SpokeParamFile `
                                       -TemplateFile $NetTemplateFilePrimary `
                                       -ResourceGroupName $RGNamePrimary `
@@ -49,7 +50,7 @@ Param(
 
         if($DeployDR -eq $true){
             New-AzResourceGroup -Name $RGNameDR -Location $LocationDR -Force
-
+            "Deploying DR $NetTemplateFilePrimary"
             New-AzResourceGroupDeployment -TemplateParameterFile $SpokeParamFile `
                                       -TemplateFile $NetTemplateFileDR `
                                       -ResourceGroupName $RGNameDR `
@@ -62,7 +63,7 @@ Param(
         if($spoke -eq "hub"){
 
             Write-Host "Deploy vnet peering between $VNNamePrimary and $VNNameDR"
-
+            
             New-AzResourceGroupDeployment -TemplateFile $NetPeerTemplateFile -ResourceGroupName $RGNamePrimary -VN1Name $VNNamePrimary -VN2Name $VNNameDR -VN2RG $RGNameDR
         }
         else{
