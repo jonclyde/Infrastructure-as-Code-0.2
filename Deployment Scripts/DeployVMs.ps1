@@ -298,7 +298,7 @@ Param(
             #>
         
         }
-    }
+    
 }else{
     Write-Host "No VM parameters file for $spoke exists. No VMs will be deployed"
     exit
