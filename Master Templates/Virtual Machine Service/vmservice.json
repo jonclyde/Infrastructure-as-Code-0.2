@@ -3,10 +3,10 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "VNAddressRangePrimary":{
-            "value": "string"
+            "type": "string"
         },
         "VNAddressRangeDR":{
-            "value": "string"
+            "type": "string"
         },
         "SubnetstoDeploy": {
             "type": "array"
@@ -38,9 +38,6 @@
         "NameforVnet": {
             "type": "string"
         },
-        "subnetName":{
-            "type": "string"
-        },
         "DefaultUsername": {
             "type": "string"
         },
@@ -61,6 +58,9 @@
         },
         "version":{
             "type": "string"
+        },  
+        "subnetName":{
+            "type": "string"
         }
     },
     "variables": {},
@@ -70,7 +70,6 @@
             "type": "Microsoft.Compute/availabilitySets",
             "apiVersion": "2019-03-01",
             "location": "[resourcegroup().location]",
-            "condition": "[equals(parameters('services')[CopyIndex()].Identifier,parameters('ServiceIdentifier'))]",
             "tags": {},
             "properties": {
                 "platformUpdateDomainCount": "5",
@@ -79,10 +78,6 @@
             },
             "sku": {
                 "name": "Aligned"
-            },
-            "copy": {
-                "name": "avsets",
-                "count": "[length(parameters('services'))]"
             }
         },
         {
@@ -133,7 +128,6 @@
             "dependsOn": [
                 "[resourceId('Microsoft.Network/networkInterfaces/', concat(parameters('VMstoDeploy')[CopyIndex()].VMName,'-nic'))]"
             ],
-            "zones": "[parameters('VMstoDeploy')[CopyIndex()].AvailabilityZone]",
             "condition": "[equals(parameters('VMstoDeploy')[CopyIndex()].serviceIdentifier,parameters('serviceidentifier'))]",
             "properties": {
                 "hardwareProfile": {

@@ -41,6 +41,8 @@
                     "Identifier": "dc",
                     "subnetName": "domain",                    
                     "OS":"WS2019",
+                    "Encrypt":true,
+                    "Antimalware": true,
                     "loadBalancer": false,
                     "LBType": ""
                 },
@@ -48,6 +50,8 @@
                     "Identifier": "mgt",
                     "subnetName": "management",                    
                     "OS":"WS2019",
+                    "Encrypt":true,
+                    "Antimalware": true,
                     "loadBalancer": false,
                     "LBType": ""
                 }
@@ -70,7 +74,7 @@
                     "serviceIdentifier": "mgt",
                     "VMName": "vm-pr-core-jb01",
                     "OS":"WS2019",
-                    "publicIP": false
+                    "publicIP": true
                 }
             ]
         },
@@ -84,21 +88,9 @@
                 },
                 {
                     "serviceIdentifier": "dc",
-                    "VMName": "vm-pr-core-dc01",
-                    "diskSizeGB": 32,
-                    "lun": 1
-                },
-                {
-                    "serviceIdentifier": "dc",
                     "VMName": "vm-pr-core-dc02",
                     "diskSizeGB": 32,
                     "lun": 0
-                },
-                {
-                    "serviceIdentifier": "dc",
-                    "VMName": "vm-pr-core-dc02",
-                    "diskSizeGB": 32,
-                    "lun": 1
                 }
             ]
         },

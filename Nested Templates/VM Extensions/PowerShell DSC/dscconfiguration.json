@@ -3,10 +3,10 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "VNAddressRangePrimary":{
-            "value": "string"
+            "type": "string"
         },
         "VNAddressRangeDR":{
-            "value": "string"
+            "type": "string"
         },
         "SubnetstoDeploy": {
             "type": "array"

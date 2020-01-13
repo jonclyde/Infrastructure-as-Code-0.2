@@ -26,8 +26,11 @@ Param(
         [Parameter(Mandatory=$true)]
         $LocationDR,
         [Parameter(Mandatory=$true)]
-        $DefaultUsername
-
+        $DefaultUsername,
+        [Parameter(Mandatory=$true)]
+        $AutomationRG,
+        [Parameter(Mandatory=$true)]
+        $NameEncryptKey
     )
     Write-Host "--------------------------------"
     Write-Host "Section 0 - Pre-requisites and set variables"
@@ -38,8 +41,8 @@ Param(
     $VMTemplateFile = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, "..\Master Templates\Virtual Machine Service\vmservice.json"))
     $DSCTemplateFile = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, "..\Nested Templates\VM Extensions\PowerShell DSC\dscconfiguration.json"))
     #$BackupTemplatefile = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, "..\Nested Templates\Recovery Services Vault\protectvm.json"))
+    $AntimalwareTemplatefile = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, "..\Nested Templates\VM Extensions\Microsoft Antimalware\microsoftantimalware.json"))
 
-    "C:\Users\jon\repos\Infrastructure-as-Code-0.2\Nested Templates\VM Extensions\PowerShell DSC\dscconfiguration.json"
     if($DeployType -eq "firewall" -and $spoke -ne "hub"){
         Write-Host "Parameters are invalid. Deploy type is firewall but spoke is not set to hub"
         Write-Host "Deploy type - $DeployType"
@@ -110,23 +113,25 @@ Param(
     }elseif($DeployType -eq "Standard"){
 
 
-    Write-Host "Checking whether VM template file for $spoke ($VMsparamfile) exists"
-    if(Test-Path $VMsParamFile){
+    Write-Host "Checking whether VM template file for $spoke ($VMsParametersFile) exists"
+    if(Test-Path $VMsParametersFile){
 
     #Deploy the hub or spoke
     Write-Host "VM parameters file for $spoke exists. Spoke will be deployed"
 
-    $services = (Get-Content $VMsparamfile | convertfrom-json).parameters.services.value
+    $services = (Get-Content $VMsParametersFile | convertfrom-json).parameters.services.value
 
     ForEach($service in $services){
 
         $serviceidentifier = $service.Identifier
-        $subnetName = $service.subnetName
+        $subnetName = "sn-" + $service.subnetName
         $OS = $service.OS
         $LoadBalance = $service.LoadBalance
         $LBType = $service.LBType
         $VNName = "vn-pr-" + $Identifier + "-inf"
         $VNRGName = "rg-pr-" + $Identifier + "inf"
+        $Encrypt = $service.Encrypt
+        $Antimalware = $service.Antimalware
 
         if($OS -eq "WS2019")
         {
@@ -137,11 +142,11 @@ Param(
         }
 
         #Create resource group for all resources per  service
-        $serviceRGName = "rg-pr-" + $Identifier + $serviceidentifier
+        $serviceRGName = "rg-pr-" + $Identifier + "-" + $serviceidentifier
         
         Write-Host "Creating resourcegroup $serviceRGName in $LocationPrimary"
         
-        New-AzResourceGroup -Name $serviceRGName -LocationPrimary $LocationPrimary -Force
+        New-AzResourceGroup -Name $serviceRGName -Location $LocationPrimary -Force
 
         #Load balancer
         
@@ -170,7 +175,7 @@ Param(
                 $loadbrules = New-AzLoadBalancerRuleConfig -Name "LBR-HTTPS" -FrontendIpConfiguration $frontendIP -BackendAddressPool $beAddressPool -Probe $healthProbe -Protocol Tcp -FrontendPort $portNumber -BackendPort "443"
             }
             
-            New-AzLoadBalancer -ResourceGroupName $serviceRGName -Name $LoadBalancerName -LocationPrimary $location -FrontendIpConfiguration $frontendIP -LoadBalancingRule $loadbrules -BackendAddressPool $beAddressPool -Probe $healthProbe -SKU Standard -Force
+            New-AzLoadBalancer -ResourceGroupName $serviceRGName -Name $LoadBalancerName -Location $location -FrontendIpConfiguration $frontendIP -LoadBalancingRule $loadbrules -BackendAddressPool $beAddressPool -Probe $healthProbe -SKU Standard -Force
         }
         $serviceAVSetName = "avs-pr-" + $Identifier + "-" + $serviceIdentifier
         $serviceAppSecGroupName = "asg-pr-" + $Identifier + "-" + $serviceIdentifier
@@ -187,34 +192,32 @@ Param(
                                       -NameforVnet $VNName `
                                       -NameforVnetRG $VNRGName `
                                       -DefaultUsername $DefaultUsername `
-                                      -VMSize $DefaultVMSize
-                                      -publisher $publisher
-                                      -offer $offer
-                                      -sku $sku
-                                      -version $version
+                                      -VMSize $DefaultVMSize `
+                                      -publisher $publisher `
+                                      -offer $offer `
+                                      -sku $sku `
+                                      -version $version `
                                       -subnetName $subnetName
 
-        <#
+        
         #VM spe<cific changes 
-        $vmlist = (Get-Content $VMsParamFile | convertfrom-json).parameters.vmstodeploy.value | Where-Object{$_.serviceIdentifier -eq $serviceidentifier}
+        $vmlist = (Get-Content $VMsParametersFile | convertfrom-json).parameters.vmstodeploy.value | Where-Object{$_.serviceIdentifier -eq $serviceidentifier}
         
-
+        $AutomationAccName = "aa-pr-" + $Identifier + "-aut-01" 
         
-        New-AzResourceGroupDeployment -AutomationRG $AutomationRG -AutomationAccName $AutomationAccName -ResourceGroupName $serviceRGName -TemplateParameterFile $SpokeVMsParamFile -TemplateFile $DSCTemplateFile -Location $location -ServiceIdentifier $serviceidentifier
+        New-AzResourceGroupDeployment -AutomationRG $AutomationRG -AutomationAccName $AutomationAccName -ResourceGroupName $serviceRGName -TemplateParameterFile $VMsParametersFile -TemplateFile $DSCTemplateFile -ServiceIdentifier $serviceidentifier
 
-         
+     
         Write-Host "Cycling through VMs for other changes..."
 
         ForEach($VM in $vmlist){
             $vmname = $vm.VMName
             $PublicIP = $vm.publicIP
-            $VMAvailZone = $vm.AvailabilityZone[0]
-            $subnetName = $vm.subnetName
 
             Write-Host "Vm name $vmname in resource group $servicergname, for service $serviceidentifier"
 
             #Loop through required disks
-            $disklist = (Get-Content $VMsParamFile | convertfrom-json).parameters.DataDiskstoDeploy.value | Where-Object{$_.serviceIdentifier -eq $serviceidentifier -and $_.VMName -eq $VMName}
+            $disklist = (Get-Content $VMsParametersFile | convertfrom-json).parameters.DataDiskstoDeploy.value | Where-Object{$_.serviceIdentifier -eq $serviceidentifier -and $_.VMName -eq $VMName}
 
             $datadisknum = 0
             $lun = -1
@@ -230,7 +233,7 @@ Param(
 
                 Write-Host "Creating disk $datadiskname"
                 Write-Host "Disk size in GB - $disksizeGB"
-                $diskConfig = New-AzDiskConfig -SkuName $servicestorageType -Location $location -CreateOption Empty -DiskSizeGB $DiskSizeGB -Zone $VMAvailZone
+                $diskConfig = New-AzDiskConfig -SkuName "Standard_LRS" -Location $LocationPrimary -CreateOption Empty -DiskSizeGB $DiskSizeGB -Zone $VMAvailZone
                 $dataDisk = New-AzDisk -DiskName $dataDiskName -Disk $diskConfig -ResourceGroupName $serviceRGName
 
                 $vm = Add-AzVMDataDisk -VM $vm -Name $dataDiskName -CreateOption Attach -ManagedDiskId $dataDisk.Id -Lun $lun
@@ -238,25 +241,25 @@ Param(
             }
             
             Update-AzVM -VM $vm -ResourceGroupName $serviceRGName
-            
+       
             #Public IP addresses
             if($publicIP -eq $true){
                 Write-Host "Deploying public ip for $vmname"
-                $nicname = $vmname + "-nic01"
+                $nicname = $vmname + "-nic"
                 $pipname = $vmname + "-pip"
                 
-                $vnet = Get-AzVirtualNetwork -Name $NameforVnet -ResourceGroupName $NameforVnetRG
+                $vnet = Get-AzVirtualNetwork -Name $VNName -ResourceGroupName $VNRGName
                 #$subnet = Get-AzVirtualNetworkSubnetConfig -Name $subnetName -VirtualNetwork $vnet
                 $nic = Get-AzNetworkInterface -Name $nicname -ResourceGroupName $serviceRGName
-                $pip = New-AzPublicIpAddress -Name $pipname -ResourceGroupName $serviceRGName -AllocationMethod Static -Location $location -Zone $VMAvailZone -Sku Standard
+                $pip = New-AzPublicIpAddress -Name $pipname -ResourceGroupName $serviceRGName -AllocationMethod Static -Location $LocationPrimary -Sku Standard -Force
                 $nic | Set-AzNetworkInterfaceIpConfig -Name ipconfig1 -PublicIPAddress $pip
                 $nic | Set-AzNetworkInterface
             }
             else{
                 "Public ip will not deploy as it is set to $publicip"
             }
-
-            #Load balancer config
+        
+            <#Load balancer config
             if($loadbalance -eq "true"){
                 Write-Host "Load balance is $loadbalance. Adding vm to load balancer backend pool"
                 $nicname = $vmname + "-nic01"            
@@ -270,16 +273,15 @@ Param(
                 Set-AzNetworkInterface -NetworkInterface $nic
             
             }
-            
+            #>
+            "++++++++++++++++++++++++++++++++ Encrypt is $encrypt"
             if($Encrypt -eq $true){
 
                 Write-Host "Encrypting disks on $vmname"
                 $keyVault = Get-AzKeyVault -VaultName $NameforKeyVault -ResourceGroupName $RGNameforKeyVault
                 $diskEncryptionKeyVaultUrl = $keyVault.VaultUri
                 $keyVaultResourceId = $keyVault.ResourceId
-                $keyEncryptionKeyUrl = (Get-AzKeyVaultKey -VaultName $NameforKeyVault -Name $KeyVaultKeyName).Key.kid
-
-                Get-AzKeyVaultKey -VaultName $NameforKeyVault -Name myKey
+                $keyEncryptionKeyUrl = (Get-AzKeyVaultKey -VaultName $NameforKeyVault -Name $NameEncryptKey).Key.kid
 
                 Set-AzVMDiskEncryptionExtension -ResourceGroupName $serviceRGName `
                     -VMName $vmname `
@@ -290,7 +292,14 @@ Param(
                     -Force
             }
             
+            if($Antimalware -eq $true){
+                "Deploying Microsoft antimalware"
+                New-AzResourceGroupDeployment -ResourceGroupName $serviceRGName -TemplateFile $AntimalwareTemplatefile -ServiceIdentifier $serviceidentifier -TemplateParameterFile $VMsParametersFile
+            }
             
+
+
+            <#
             if($Backup -eq $true){
 
                 New-AzResourceGroupDeployment -ResourceGroupName $RGNameforRSV -TemplateFile $BackupTemplatefile -Location $location -VMNameforBackup $VMName -VMRGName $serviceRGName -RSVRGName $RGNameforRSV -RSVName $NameforRSV -BackupPolicyName $backupPolicy
@@ -298,7 +307,7 @@ Param(
             #>
         
         }
-    
+    }  
 }else{
     Write-Host "No VM parameters file for $spoke exists. No VMs will be deployed"
     exit

@@ -17,3 +17,22 @@ New-AzResourceGroupDeployment -TemplateFile ".\Log Analytics\workspace.json" -Re
 New-AzResourceGroupDeployment -TemplateFile ".\Azure Backup\vault.json" -ResourceGroupName "az-core-recovery" -identifier "core" -RandomInteger "43278423" -DeployDR "true" -LocationPrimary "westeurope" -LocationDR "northeurope"
 
 .\DeployAzureBackup.ps1 -identifier "core" -DeployDR "true" -LocationPrimary "westeurope" -LocationDR "northeurope"
+
+cd "C:\Users\jon\repos\Infrastructure-as-Code-0.2\Deployment Scripts"
+
+.\DeployVMs.ps1 -Spoke "hub" `
+                -Identifier "core" `
+                -DeployType "standard" `
+                -NameforKeyVault "kv-pr-core" `
+                -RGNameforKeyVault "rg-pr-core-key" `
+                -DeployFW "true" `
+                -DeployDR "true" `
+                -FirewallHubSubnetName "sn-Firewall" `
+                -FirewallHubSubnetRangePrimary "FirewallHubSubnetRangePrimary" `
+                -FirewallHubSubnetRangeDR "FirewallHubSubnetRangeDR" `
+                -DefaultVMSize "Standard_B2S" `
+                -LocationPrimary "westeurope" `
+                -LocationDR "northeurope" `
+                -DefaultUsername "ladmin" `
+                -AutomationRG "rg-pr-core-aut" `
+                -NameEncryptKey "encKey"    
