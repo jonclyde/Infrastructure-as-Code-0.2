@@ -305,6 +305,8 @@ Param(
                 New-AzResourceGroupDeployment -ResourceGroupName $RGNameforRSV -TemplateFile $BackupTemplatefile -Location $location -VMNameforBackup $VMName -VMRGName $serviceRGName -RSVRGName $RGNameforRSV -RSVName $NameforRSV -BackupPolicyName $backupPolicy
             }
             #>
+
+            #Log Analytics agent
         
         }
     }  
