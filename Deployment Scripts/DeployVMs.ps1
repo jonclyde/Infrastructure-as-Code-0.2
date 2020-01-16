@@ -307,6 +307,18 @@ Param(
             #>
 
             #Log Analytics agent
+            $workspaceName = "your workspace name"
+            $VMresourcegroup = "**"
+            $VMresourcename = "**"
+
+            $workspace = (Get-AzureRmOperationalInsightsWorkspace).Where({$_.Name -eq $workspaceName})
+
+            if ($workspace.Name -ne $workspaceName)
+            {
+                Write-Error "Unable to find OMS Workspace $workspaceName. Do you need to run Select-AzureRMSubscription?"
+            }
+
+            $workspaceId = $workspace.CustomerId
         
         }
     }  
