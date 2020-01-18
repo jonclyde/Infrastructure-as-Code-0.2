@@ -34,3 +34,24 @@ cd "C:\Users\jon\repos\Infrastructure-as-Code-0.2\Deployment Scripts"
                 -DefaultUsername "ladmin" `
                 -AutomationRG "rg-pr-core-aut" `
                 -NameEncryptKey "encKey"    
+
+.\DeployRouting.ps1 -Spoke "hub" -Identifier "core" -DeployFirewalls "true" -FirewallHubSubnetName "sn-Firewall" -LocationPrimary "westeurope" -LocationDR "northeurope"
+
+
+    
+
+
+                Param(
+                    [Parameter(Mandatory=$true)]
+                    $Spoke,
+                    [Parameter(Mandatory=$true)]
+                    $Identifier,
+                    [Parameter(Mandatory=$true)]
+                    $Location,
+                    [Parameter(Mandatory=$true)]
+                    $DeployFirewalls,
+                    [Parameter(Mandatory=$false)]
+                    $FirewallIP,
+                    [Parameter(Mandatory=$false)]
+                    $FirewallHubSubnetName
+                )

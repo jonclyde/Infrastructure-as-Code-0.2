@@ -1,0 +1,32 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "RouteTableName": {
+            "type": "string"
+        },
+        "RouteName": {
+            "type": "string"
+        },
+        "addressPrefix":{
+            "type": "string"
+        },
+        "FirewallIP":{
+            "type": "string"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "name": "[concat(parameters('RouteTableName'),'/',parameters('RouteName'))]",
+            "type": "Microsoft.Network/routeTables/routes",
+            "apiVersion": "2019-04-01",
+            "properties": {
+                "addressPrefix": "[parameters('addressPrefix')]",
+                "nextHopType": "VirtualAppliance",
+                "nextHopIpAddress": "[parameters('FirewallIP')]"
+            }
+        }
+    ],
+    "outputs": {}
+}
