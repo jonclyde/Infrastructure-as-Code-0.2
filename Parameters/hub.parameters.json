@@ -43,6 +43,7 @@
                     "OS":"WS2019",
                     "Encrypt":true,
                     "Antimalware": true,
+                    "Monitor": true,
                     "loadBalancer": false,
                     "LBType": ""
                 },
@@ -52,6 +53,7 @@
                     "OS":"WS2019",
                     "Encrypt":true,
                     "Antimalware": true,
+                    "Monitor": true,
                     "loadBalancer": false,
                     "LBType": ""
                 }

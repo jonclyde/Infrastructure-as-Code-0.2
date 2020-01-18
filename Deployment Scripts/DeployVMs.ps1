@@ -132,6 +132,7 @@ Param(
         $VNRGName = "rg-pr-" + $Identifier + "inf"
         $Encrypt = $service.Encrypt
         $Antimalware = $service.Antimalware
+        $monitor = $service.Monitor
 
         if($OS -eq "WS2019")
         {
@@ -307,19 +308,20 @@ Param(
             #>
 
             #Log Analytics agent
-            $workspaceName = "your workspace name"
-            $VMresourcegroup = "**"
-            $VMresourcename = "**"
 
-            $workspace = (Get-AzureRmOperationalInsightsWorkspace).Where({$_.Name -eq $workspaceName})
+            if($Monitor -eq $true){
+                "Deploying Log analytics agent"
 
-            if ($workspace.Name -ne $workspaceName)
-            {
-                Write-Error "Unable to find OMS Workspace $workspaceName. Do you need to run Select-AzureRMSubscription?"
-            }
+                $workspace = get-azresource | Where-Object{$_.ResourceGroupName -eq "rg-pr-core-mon" -and $_.ResourceType -eq "Microsoft.OperationalInsights/workspaces"}
 
-            $workspaceId = $workspace.CustomerId
-        
+                $workspaceName = $workspace.Name
+
+                $workspace = (Get-AzOperationalInsightsWorkspace).Where({$_.Name -eq $workspaceName})
+
+                $workspaceId = $workspace.CustomerId
+
+                New-AzResourceGroupDeployment -ResourceGroupName $serviceRGName -TemplateFile $AntimalwareTemplatefile -ServiceIdentifier $serviceidentifier -TemplateParameterFile $VMsParametersFile -WorkspaceName $workspaceName -WorkspaceId $workspaceId
+            }        
         }
     }  
 }else{
