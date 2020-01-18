@@ -34,6 +34,9 @@
         },
         "workspaceName":{
             "type": "string"
+        },
+        "workspaceRG":{
+            "type": "string"
         }
     },
     "variables": {},
@@ -53,7 +56,7 @@
 			        "workspaceId": "[parameters('workspaceId')]"
                 },
                 "protectedSettings": {
-                    "workspaceKey": "[listKeys(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName')), '2015-11-01-preview').primarySharedKey]"
+                    "workspaceKey": "[listKeys(resourceId(parameters('workspaceRG'),'Microsoft.OperationalInsights/workspaces', parameters('workspaceName')), '2015-11-01-preview').primarySharedKey]"
                 }
             },
             "copy": {

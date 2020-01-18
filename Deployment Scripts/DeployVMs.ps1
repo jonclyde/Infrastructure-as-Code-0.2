@@ -42,6 +42,7 @@ Param(
     $DSCTemplateFile = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, "..\Nested Templates\VM Extensions\PowerShell DSC\dscconfiguration.json"))
     #$BackupTemplatefile = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, "..\Nested Templates\Recovery Services Vault\protectvm.json"))
     $AntimalwareTemplatefile = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, "..\Nested Templates\VM Extensions\Microsoft Antimalware\microsoftantimalware.json"))
+    $LogAnalyticsTemplatefile = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, "..\Nested Templates\VM Extensions\Log Analytics\loganalytics.json"))
 
     if($DeployType -eq "firewall" -and $spoke -ne "hub"){
         Write-Host "Parameters are invalid. Deploy type is firewall but spoke is not set to hub"
@@ -312,7 +313,9 @@ Param(
             if($Monitor -eq $true){
                 "Deploying Log analytics agent"
 
-                $workspace = get-azresource | Where-Object{$_.ResourceGroupName -eq "rg-pr-core-mon" -and $_.ResourceType -eq "Microsoft.OperationalInsights/workspaces"}
+                $workspaceRG = "rg-pr-core-mon" 
+                
+                $workspace = get-azresource | Where-Object{$_.ResourceGroupName -eq $workspaceRG -and $_.ResourceType -eq "Microsoft.OperationalInsights/workspaces"}
 
                 $workspaceName = $workspace.Name
 
@@ -320,7 +323,7 @@ Param(
 
                 $workspaceId = $workspace.CustomerId
 
-                New-AzResourceGroupDeployment -ResourceGroupName $serviceRGName -TemplateFile $AntimalwareTemplatefile -ServiceIdentifier $serviceidentifier -TemplateParameterFile $VMsParametersFile -WorkspaceName $workspaceName -WorkspaceId $workspaceId
+                New-AzResourceGroupDeployment -ResourceGroupName $serviceRGName -TemplateFile $LogAnalyticsTemplatefile -ServiceIdentifier $serviceidentifier -TemplateParameterFile $VMsParametersFile -workspaceName $workspaceName -WorkspaceId $workspaceId -workspaceRG $workspaceRG
             }        
         }
     }  
