@@ -261,7 +261,7 @@ Param(
                 "Public ip will not deploy as it is set to $publicip"
             }
         
-            <#Load balancer config
+            
             if($loadbalance -eq "true"){
                 Write-Host "Load balance is $loadbalance. Adding vm to load balancer backend pool"
                 $nicname = $vmname + "-nic01"            
@@ -275,7 +275,7 @@ Param(
                 Set-AzNetworkInterface -NetworkInterface $nic
             
             }
-            #>
+            
             "++++++++++++++++++++++++++++++++ Encrypt is $encrypt"
             if($Encrypt -eq $true){
 
