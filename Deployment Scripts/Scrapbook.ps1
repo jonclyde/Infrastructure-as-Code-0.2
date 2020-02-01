@@ -35,7 +35,30 @@ cd "C:\Users\jon\repos\Infrastructure-as-Code-0.2\Deployment Scripts"
                 -AutomationRG "rg-pr-core-aut" `
                 -NameEncryptKey "encKey"    
 
-.\DeployRouting.ps1 -Spoke "hub" -Identifier "core" -DeployFirewalls "true" -FirewallHubSubnetName "sn-Firewall" -LocationPrimary "westeurope" -LocationDR "northeurope"
+
+                Param(
+                    [Parameter(Mandatory=$true)]
+                    $Spoke,
+                    [Parameter(Mandatory=$true)]
+                    $Identifier,
+                    [Parameter(Mandatory=$true)]
+                    $LocationPrimary,
+                    [Parameter(Mandatory=$true)]
+                    $LocationDR,
+                    [Parameter(Mandatory=$true)]
+                    $DeployDR,
+                    [Parameter(Mandatory=$true)]
+                    $DeployFirewalls,
+                    [Parameter(Mandatory=$false)]
+                    $FirewallIPPrimary,
+                    [Parameter(Mandatory=$false)]
+                    $FirewallIPDR,
+                    [Parameter(Mandatory=$false)]
+                    $FirewallHubSubnetName
+                )
+
+
+.\DeployRouting2.ps1 -Spoke "hub" -Identifier "core" -LocationPrimary "westeurope" -LocationDR "northeurope" -DeployDR "true" -DeployFirewalls "true" -FirewallIPPrimary "10.0.0.6" -FirewallIPDR "10.0.0.9" -FirewallHubSubnetName "Firewall"
 
 
     
