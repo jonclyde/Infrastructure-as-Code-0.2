@@ -85,6 +85,21 @@
             "resources": []
         },
         {
+            "name": "[concat('rt-',parameters('EnvironmentIdentifier'),'-',parameters('Identifier'),'-',parameters('subnetsToDeploy')[CopyIndex()].subnetName)]",
+            "type": "Microsoft.Network/routeTables",
+            "apiVersion": "2019-04-01",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "routes": [],
+                "disableBgpRoutePropagation": false
+            },
+            "copy": {
+                "name": "routeTables",
+                "count": "[length(parameters('subnetsToDeploy'))]"
+            },
+            "resources": []
+        },
+        {
             "name": "[concat(variables('vnetName'))]",
             "type": "Microsoft.Network/virtualNetworks",
             "apiVersion": "2019-04-01",
@@ -110,6 +125,9 @@
                 "addressPrefix": "[parameters('subnetsToDeploy')[CopyIndex()].subnetAddressRangePrimary]",
                 "networkSecurityGroup": {
                     "id": "[resourceid('Microsoft.Network/networkSecurityGroups',concat('nsg-',parameters('EnvironmentIdentifier'),'-',parameters('Identifier'),'-',parameters('subnetsToDeploy')[CopyIndex()].subnetName))]"
+                },
+                "routeTable": {
+                    "id": "[resourceid('Microsoft.Network/routeTables',concat('rt-',parameters('EnvironmentIdentifier'),'-',parameters('Identifier'),'-',parameters('subnetsToDeploy')[CopyIndex()].subnetName))]"
                 },
                 "serviceEndpoints": [
                     {
