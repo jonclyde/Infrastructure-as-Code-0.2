@@ -8,6 +8,9 @@
         "VNAddressRangeDR":{
             "value": "10.1.4.0/22"
         },
+        "Identifier":{
+            "value": "app1"
+        },
         "subnetsToDeploy": {
             "value": [
                 {

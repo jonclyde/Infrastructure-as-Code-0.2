@@ -8,6 +8,9 @@
         "VNAddressRangeDR":{
             "value": "10.1.8.0/22"
         },
+        "Identifier":{
+            "value": "rds"
+        },
         "subnetsToDeploy": {
             "value": [
                 {
