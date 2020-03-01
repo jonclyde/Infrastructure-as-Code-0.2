@@ -43,9 +43,17 @@
                 "secretName": "DefaultPw"
             }
         },
-        "Services": {},
-        "VMstoDeploy": {},
-        "DataDiskstoDeploy": {},
-        "DSCConfigurations": {}
+        "Services": {
+            "value": []
+        },
+        "VMstoDeploy": {
+            "value": []
+        },
+        "DataDiskstoDeploy": {
+            "value": []
+        },
+        "DSCConfigurations": {
+            "value": []
+        }
     }
 }
