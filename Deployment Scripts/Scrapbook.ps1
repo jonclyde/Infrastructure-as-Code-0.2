@@ -33,8 +33,41 @@ cd "C:\Users\jon\repos\Infrastructure-as-Code-0.2\Deployment Scripts"
                 -LocationDR "northeurope" `
                 -DefaultUsername "ladmin" `
                 -AutomationRG "rg-pr-core-aut" `
-                -NameEncryptKey "encKey"    
-
+                -NameEncryptKey "encKey"
+                
+.\DeployVMs.ps1 -Spoke "spoke1" `
+                -Identifier "app1" `
+                -DeployType "standard" `
+                -NameforKeyVault "kv-pr-core" `
+                -RGNameforKeyVault "rg-pr-core-key" `
+                -DeployFW "true" `
+                -DeployDR "true" `
+                -FirewallHubSubnetName "sn-Firewall" `
+                -FirewallHubSubnetRangePrimary "FirewallHubSubnetRangePrimary" `
+                -FirewallHubSubnetRangeDR "FirewallHubSubnetRangeDR" `
+                -DefaultVMSize "Standard_B2S" `
+                -LocationPrimary "westeurope" `
+                -LocationDR "northeurope" `
+                -DefaultUsername "ladmin" `
+                -AutomationRG "rg-pr-core-aut" `
+                -NameEncryptKey "encKey"  
+                
+.\DeployVMs.ps1 -Spoke "spoke2" `
+                -Identifier "rds" `
+                -DeployType "standard" `
+                -NameforKeyVault "kv-pr-core" `
+                -RGNameforKeyVault "rg-pr-core-key" `
+                -DeployFW "true" `
+                -DeployDR "true" `
+                -FirewallHubSubnetName "sn-Firewall" `
+                -FirewallHubSubnetRangePrimary "FirewallHubSubnetRangePrimary" `
+                -FirewallHubSubnetRangeDR "FirewallHubSubnetRangeDR" `
+                -DefaultVMSize "Standard_B2S" `
+                -LocationPrimary "westeurope" `
+                -LocationDR "northeurope" `
+                -DefaultUsername "ladmin" `
+                -AutomationRG "rg-pr-core-aut" `
+                -NameEncryptKey "encKey"  
 
                 Param(
                     [Parameter(Mandatory=$true)]

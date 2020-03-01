@@ -8,160 +8,200 @@ Param(
         [Parameter(Mandatory=$true)]
         $LocationDR,
         [Parameter(Mandatory=$true)]
+        $DeployDR,
+        [Parameter(Mandatory=$true)]
         $DeployFirewalls,
         [Parameter(Mandatory=$false)]
-        $FirewallIP,
+        $FirewallIPPrimary,
         [Parameter(Mandatory=$false)]
-        $FirewallHubSubnetName
+        $FirewallIPDR,
+        [Parameter(Mandatory=$false)]
+        $FirewallHubSubnetIdentifier
     )
-    Write-Host "Checking DeployFirewalls variable"
-    if($DeployFirewalls -eq $false){
-        Write-Host "DeployFirewalls parameter is set to false, no route tables will be changed and script will exit"
-        exit
-    }else{
-        Write-Host "DeployFirewalls is true, route tables will be updated"
-    }
 
+    Write-Host "--------------------------------"
+    Write-Host "Section 0 - Pre-requisites and set variables"
+    Write-Host "--------------------------------"
     $networks = @("hub","Spoke1","Spoke2","Spoke3","Spoke4","Spoke5")
-    
-    $firewallSubnetName = $FirewallHubSubnetName
 
-    $RouteTemplateFile = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, "..\Nested Templates\Route Table\route.json"))
-    #Create table https://blogs.msdn.microsoft.com/rkramesh/2012/02/01/creating-table-using-powershell/
-    
-    Write-Host "Loop through each possible network"
+    Write-Host "Checking DeployFirewalls variable"
+
+    <#
+        Routes for each subnet in the environment
+        - other subnets on same vnet (configure DR vnet if applicable)
+        - hub subnets in the same region, not including FW subnet
+        - other vnets in primary region
+        - All vnets in the secondary region
+    #>
+
+    if($DeployFirewalls -eq $true){
+
+        Write-Host "--------------------------------"
+        Write-Host "Section 1 - Configure routes"
+        Write-Host "--------------------------------"
+        Write-Host "DeployFirewalls is true, route tables will be updated"
     
         $SpokeNetworkParamFile = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, "..\parameters\$spoke.parameters.json"))
 
-        Write-Host "Check whether $spoke file exists"
+        Write-Host "$spoke routes selected for configuration in this script, checking $spoke file exists"
+        
         
         if(Test-Path $SpokeNetworkParamFile){
-
             Write-Host "$spoke parameters file exists"
 
             $Subnets = (Get-Content $SpokeNetworkParamFile | ConvertFrom-Json).parameters.subnetstodeploy.value
             $NoneFwSubnets = $Subnets | Where-Object{$_.SubnetName -ne $FirewallHubSubnetIdentifier}
 
-            Write-Host "Looping through subnets in parameter file"
+            Write-Host "--------------------------------"
+            Write-Host "Section 1.1 - Configure routes - subnets on the same vnet (configure DR vnet if applicable)"
+            Write-Host "--------------------------------"
+
+            Write-Host "Looping through subnets on the same vnet in parameter file"
             ForEach($subnet in $NoneFwSubnets){
-                
                 $subnetName = $subnet.SubnetName
 
-                Write-Host "Working on subnet $subnetname"
+                Write-Host "<----------- Working on subnet $subnetname"
 
-                $routeTableName = "rt-" + $Identifier + "-" + $subnetName
-                $RTRGName = "rg-" + $Identifier + "-infrastructure"
+                $routeTableNamePrimary = "rt-pr-" + $Identifier + "-" + $subnetName
+                $RTPrimaryRGName = "rg-pr-" + $Identifier + "-inf"
+                $routeTablePR = Get-AzRouteTable -ResourceGroupName $RTPrimaryRGName -Name $routeTableNamePrimary
 
-                $OtherSubnets = $subnets | Where-Object{$_.SubnetName -ne $subnetName -and $_.SubnetName -ne $FirewallHubSubnetIdentifier}
-                $routeTable = Get-AzRouteTable -ResourceGroupName $RTRGName -Name $routeTableName
+                "Primary route table for $subnetname : routetablename $routetablenameprimary, rtprimaryrgname $RTPrimaryRGName"
+                
+                if($DeployDR -eq $true){
+                    $routeTableNameDR = "rt-dr-" + $Identifier + "-" + $subnetName
+                    $RTDRRGName = "rg-dr-" + $Identifier + "-inf"
+                    $routeTableDR = Get-AzRouteTable -ResourceGroupName $RTDRRGName -Name $routeTableNameDR
 
-                ForEach($OtherSubnet in $OtherSubnets){
-                    $OtherSubnetName = $OtherSubnet.SubnetName
-                    $OtherSubnetAddressRange = $OtherSubnet.subnetAddressRange
-                    $routename = "R-" + $OtherSubnetName
+                    "DR route table for $subnetname : routetablename $routetablenameDR, rtprimaryrgname $RTDRRGName"
 
-                    Write-Host "Adding $routename to $routetablename in $rtrgname. Address prefix $othersubnetaddressrange, to $firewallip"
-
-                    $NewRouteTableConfig = Add-AzRouteConfig -Name $routeName -AddressPrefix $OtherSubnetAddressRange -NextHopType "VirtualAppliance" -NextHopIpAddress $FirewallIP -RouteTable $routeTable
                 }
                 
+                $OtherSubnets = $subnets | Where-Object{$_.SubnetName -ne $subnetName -and $_.SubnetName -notlike "*$FirewallHubSubnetIdentifier*"}
+
+                #Process per subnet routes for local primary and DR vnets
+                ForEach($OtherSubnet in $OtherSubnets){
+                    $OtherSubnetName = $OtherSubnet.SubnetName
+                    $OtherSubnetAddressRangePR = $OtherSubnet.subnetAddressRangePrimary
+                    $OtherSubnetAddressRangeDR = $OtherSubnet.subnetAddressRangeDR
+                    
+                    $routeNamePRSubnet = "R-PR-" + $OtherSubnetName
+                    $routeNameDRSubnet  = "R-DR-" + $OtherSubnetName
+
+                    Write-Host "Add route (other subnet, same vnet primary): spoke $spoke, routename $routeNamePRSubnet, addressprefix $OtherSubnetAddressRangePR, routetable $routetablenameprimary"
+
+                    $NewRouteTableConfigPR = Add-AzRouteConfig -Name $routeNamePRSubnet -AddressPrefix $OtherSubnetAddressRangePR -NextHopType "VirtualAppliance" -NextHopIpAddress $FirewallIPPrimary -RouteTable $routetablePR
+                    
+                    if($DeployDR -eq $true){
+                        $OtherSubnetAddressRangeDR = $OtherSubnet.OtherSubnetAddressRangeDR
+                        
+    
+                        Write-Host "Add route (other subnet, same vnet DR): spoke $spoke, routename $routeNameDRSubnet, addressprefix $OtherSubnetAddressRangeDR, routetable $routetablenameDR"
+                        
+                        $NewRouteTableConfigDR = Add-AzRouteConfig -Name $routeNameDRSubnet -AddressPrefix $OtherSubnetAddressRangeDR -NextHopType "VirtualAppliance" -NextHopIpAddress $FirewallIPDR -RouteTable $routetableDR
+
+                    }
+
+                }
+
+                Write-Host "--------------------------------"
+                Write-Host "Section 1.2 - Configure routes - current vnet primary and DR routing across regions"
+                Write-Host "--------------------------------"
+                if($DeployDR -eq $true){
+                    $PrimaryRange = (Get-Content $SpokeNetworkParamFile | ConvertFrom-Json).parameters.VNAddressRangePrimary.value
+                    $DRRange = (Get-Content $SpokeNetworkParamFile | ConvertFrom-Json).parameters.VNAddressRangeDR.value
+                    $routeNamePRVNet = "R-PR-" + $Identifier 
+                    $routeNameDRVnet = "R-DR-" + $Identifier
+
+                    Write-Host "Add route (for DR range, to primary route table for $subnetname): spoke $spoke, routename $routeNameDRVnet, addressprefix $DRRange, routetable $routetablenameprimary"
+
+                    $NewRouteTableConfigPR = Add-AzRouteConfig -Name $routeNameDRVnet -AddressPrefix $DRRange -NextHopType "VirtualAppliance" -NextHopIpAddress $FirewallIPPrimary -RouteTable $routetablePR
+
+                    Write-Host "Add route (for primary range, to DR route table for $subnetname): spoke $spoke, routename $routeNamePRVNet, addressprefix $PrimaryRange, routetable $routetablenameDR"
+
+                    $NewRouteTableConfigDR = Add-AzRouteConfig -Name $routeNamePRVNet -AddressPrefix $PrimaryRange -NextHopType "VirtualAppliance" -NextHopIpAddress $FirewallIPDR -RouteTable $routetableDR
+                }
+            
+                Write-Host "--------------------------------"
+                Write-Host "Section 1.3 - Configure routes - routes for other vnets (configure DR if applicable)"
+                Write-Host "--------------------------------"
+                
+                Write-Host "Getting all networks that aren't the same spoke or the hub spoke"
                 $othernetworks = $networks | Where-Object{$_ -ne $spoke -and $_ -ne "hub"}
 
                 ForEach($OtherNetwork in $OtherNetworks){
-                    $OtherNetworkParamFile = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, "..\parameters\$othernetwork.networking.parameters.json"))
+                    $OtherNetworkParamFile = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, "..\parameters\$othernetwork.parameters.json"))
         
                     Write-Host "Checking $othernetwork exists"
         
                     if(Test-Path $OtherNetworkParamFile){
                         Write-Host "File for $othernetwork exists"
         
-                        $OtherNetworkAddressRange = (Get-Content $OtherNetworkParamFile | convertfrom-json).parameters.vnetaddressrange.value
+                        $OtherNetworkAddressRangePR = (Get-Content $OtherNetworkParamFile | convertfrom-json).parameters.VNAddressRangePrimary.value
+                        $OtherNetworkAddressRangeDR = (Get-Content $OtherNetworkParamFile | convertfrom-json).parameters.VNAddressRangeDR.value
 
-                        $routeName = "R-" + $othernetwork
+                        $OtherNetIdentifier = (Get-Content $OtherNetworkParamFile | ConvertFrom-Json).parameters.Identifier.value
+                        
+                        $routenamePR = "R-PR-" + $OtherNetIdentifier
+                        $routenameDR = "R-DR-" + $OtherNetIdentifier
 
-                        $NewRouteTableConfig = Add-AzRouteConfig -Name $routeName -AddressPrefix $OtherNetworkAddressRange -NextHopType "VirtualAppliance" -NextHopIpAddress $FirewallIP -RouteTable $routeTable
+                        Write-Host "Add route (primary region, primary range for another spoke): spoke $spoke, routename $routenamedr, addressprefix $OtherSubnetAddressRangeDR, routetable $routetablenamePR"
+
+                        $NewRouteTableConfigPR = Add-AzRouteConfig -Name $routenamePR -AddressPrefix $OtherNetworkAddressRangePR -NextHopType "VirtualAppliance" -NextHopIpAddress $FirewallIPPrimary -RouteTable $routeTablePR
+
+                        if($DeployDR -eq $true){
+
+                            Write-Host "Add route (primary region, DR range for another spoke): spoke $spoke, routename $routenamedr, addressprefix $OtherSubnetAddressRangeDR, routetable $routetablenamePR"
+                            
+                            $NewRouteTableConfigPR = Add-AzRouteConfig -Name $routeNameDR -AddressPrefix $OtherNetworkAddressRangeDR -NextHopType "VirtualAppliance" -NextHopIpAddress $FirewallIPPrimary -RouteTable $routeTablePR
+
+                            Write-Host "Add route (DR region, primary range for another spoke): spoke $spoke, routename $routenamedr, addressprefix $OtherSubnetAddressRangeDR, routetable $routetablenameDR"
+
+                            $NewRouteTableConfigDR = Add-AzRouteConfig -Name $routenamePR -AddressPrefix $OtherNetworkAddressRangePR -NextHopType "VirtualAppliance" -NextHopIpAddress $FirewallIPDR -RouteTable $routeTableDR
+                            
+                            Write-Host "Add route (DR region, DR range for another spoke): spoke $spoke, routename $routenamedr, addressprefix $OtherSubnetAddressRangeDR, routetable $routetablenameDR"
+
+                            $NewRouteTableConfigDR = Add-AzRouteConfig -Name $routeNameDR -AddressPrefix $OtherNetworkAddressRangeDR -NextHopType "VirtualAppliance" -NextHopIpAddress $FirewallIPDR -RouteTable $routeTableDR
+                        }
         
                     }else{
                         Write-Host "File for $othernetworkparamfile does not exists"
                     }
                 }
 
-                $NewRouteTableConfig = Add-AzRouteConfig -Name "R-Default" -AddressPrefix "0.0.0.0/0" -NextHopType "VirtualAppliance" -NextHopIpAddress $FirewallIP -RouteTable $routeTable
+                Write-Host "Add route (primary region, internet traffic): spoke $spoke, routename R-Default, addressprefix 0.0.0.0/0, routetable $routetablenameprimary"
 
-                $NewRouteTableConfig | Set-AzRouteTable
-            
-                #New-AzResourceGroupDeployment -TemplateFile $RouteTemplateFile -ResourceGroupName $RTRGName -FirewallIP $FirewallIP -Location $Location -routetablename $routeTableName -RouteNames $routeNameArray -RoutePrefixes $addressPrefixArray
-            }
-        
-
-        <#
-            if($spoke -eq "hub"){
-
-            }
-                    
-        }
-
-        $HubNetworkParamFile = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, "..\parameters\hub.virtualnetworks.parameters.json"))
-        
-        
-        #Add hub ranges (exluding firewall) to range list
-        Write-Host "Check and add hub ranges (exluding firewall range) to range array"
-
-        $NoneFirewallHubRanges = (Get-Content $HubNetworkParamFile | convertfrom-json).parameters.subnetstodeploy.value | Where-Object {$_.subnetName -ne $firewallSubnetName } 
-
-        ForEach($range in $NoneFirewallHubRanges){
-            $subnetAddressRange = $range.subnetAddressRange
-
-            $ranges += $subnetAddressRange
-        }
-
-        Write-Host "Check and add ranges of other virtual networks"
-        
-        $OtherNetworks = $networks | Where-Object{$_ -ne $Spoke}
-        
-        ForEach($OtherNetwork in $OtherNetworks){
-            $OtherNetworkParamFile = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, "..\parameters\$othernetwork.virtualnetworks.parameters.json"))
-
-            Write-Host "Checking $othernetwork"
-
-            if(Test-Path $OtherNetworkParamFile){
-                Write-Host "File for $spoke exists"
-
-                (Get-Content $HubNetworkParamFile | convertfrom-json).parameters.subnetstodeploy.value
-
-            }
-            
-            
-            $services = (Get-Content $HubNetworkParamFile | convertfrom-json).parameters.subnetstodeploy.value
-            #>
-        }
-
-        
-<#
-        ForEach($OtherNetwork in $OtherNetworks){
-            $OtherNetworkParamFile = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, "..\parameters\$othernetwork.virtualnetworks.parameters.json"))
-
-            $services = (Get-Content $HubNetworkParamFile | convertfrom-json).parameters.vnetaddressrange.value
-        }
-
-
-        if($spoke -eq "hub"){
-
-        }elseif($network -eq $Spoke){
-
-        }else{
-            
-            Write-Host "Checking whether virtual network template file for $spoke ($spokeVMsparamfile) exists"
+                $NewRouteTableConfigPR = Add-AzRouteConfig -Name "R-Default" -AddressPrefix "0.0.0.0/0" -NextHopType "VirtualAppliance" -NextHopIpAddress $FirewallIPPrimary -RouteTable $routeTablePR
                 
-                if(Test-Path $SpokeVMsParamFile){
-                    Write-Host "Virtual network parameters file for $spoke exists."
-
-                    $services = (Get-Content $spokeVMsparamfile | convertfrom-json).parameters.services.value
+                Write-Host "Add route (DR region, internet traffic): spoke $spoke, routename R-Default, addressprefix 0.0.0.0/0, routetable $routetablenamedr"
+                
+                if($DeployDR -eq $true)
+                {
+                    $NewRouteTableConfigDR = Add-AzRouteConfig -Name "R-Default" -AddressPrefix "0.0.0.0/0" -NextHopType "VirtualAppliance" -NextHopIpAddress $FirewallIPDR -RouteTable $routeTableDR
                 }
-        
+
+                "PR final route table for $subnetname"
+
+                $NewRouteTableConfigPR | Set-AzRouteTable
+                
+                "DR final route table for $subnetname"
+                $NewRouteTableConfigDR | Set-AzRouteTable
+            }
+
+        }
+        else{
+            Write-Host "$spoke ($SpokeNetworkParamFile) parameters file doesn't exist. Script will be terminated"
+            Write-Host "--------------------------------"
+            Write-Host "End"
+            Write-Host "--------------------------------"
+            exit
         }
 
         
+    }else{
+        Write-Host "DeployFirewalls parameter is set to false, no route tables will be changed and script will exit"
+        Write-Host "--------------------------------"
+        Write-Host "End"
+        Write-Host "--------------------------------"
+        exit
     }
-
-#>

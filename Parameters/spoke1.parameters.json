@@ -46,37 +46,42 @@
         "Services": {
             "value": [
                 {
-                    "Identifier": "dc",
-                    "subnetName": "domain",                    
+                    "Identifier": "web",
+                    "subnetName": "web",                    
                     "OS":"WS2019",
-                    "loadBalancer": false,
-                    "LBType": ""
+                    "loadBalancer": true,
+                    "LBType": "HTTPS"
                 },
                 {
-                    "Identifier": "mgt",
-                    "subnetName": "management",                    
+                    "Identifier": "app",
+                    "subnetName": "app",                    
                     "OS":"WS2019",
-                    "loadBalancer": false,
-                    "LBType": ""
+                    "loadBalancer": true,
+                    "LBType": "HTTPS"
                 }
             ]
         },
         "VMstoDeploy": {
             "value": [
                 {
-                    "serviceIdentifier": "dc",
-                    "VMName": "vm-pr-core-dc01",
+                    "serviceIdentifier": "web",
+                    "VMName": "vm-app1-web-01",
                     "publicIP": false
                 },
                 {
-                    "serviceIdentifier": "dc",
-                    "VMName": "vm-pr-core-dc02",
+                    "serviceIdentifier": "web",
+                    "VMName": "vm-app1-web-02",
                     "OS":"WS2019",
                     "publicIP": false
                 },
                 {
-                    "serviceIdentifier": "mgt",
-                    "VMName": "vm-pr-core-jb01",
+                    "serviceIdentifier": "app",
+                    "VMName": "vm-app1-app-01",
+                    "publicIP": false
+                },
+                {
+                    "serviceIdentifier": "app",
+                    "VMName": "vm-app1-app-02",
                     "OS":"WS2019",
                     "publicIP": false
                 }
@@ -85,26 +90,26 @@
         "DataDiskstoDeploy": {
             "value": [
                 {
-                    "serviceIdentifier": "dc",
-                    "VMName": "vm-pr-core-dc01",
+                    "serviceIdentifier": "web",
+                    "VMName": "vm-app1-web-01",
                     "diskSizeGB": 32,
                     "lun": 0
                 },
                 {
-                    "serviceIdentifier": "dc",
-                    "VMName": "vm-pr-core-dc01",
+                    "serviceIdentifier": "web",
+                    "VMName": "vm-app1-web-02",
                     "diskSizeGB": 32,
                     "lun": 1
                 },
                 {
-                    "serviceIdentifier": "dc",
-                    "VMName": "vm-pr-core-dc02",
+                    "serviceIdentifier": "app",
+                    "VMName": "vm-app1-app-01",
                     "diskSizeGB": 32,
                     "lun": 0
                 },
                 {
-                    "serviceIdentifier": "dc",
-                    "VMName": "vm-pr-core-dc02",
+                    "serviceIdentifier": "app",
+                    "VMName": "vm-app1-app-02",
                     "diskSizeGB": 32,
                     "lun": 1
                 }
@@ -113,20 +118,25 @@
         "DSCConfigurations":{
             "value":[
                 {
-                    "serviceIdentifier":"dc",
-                    "VMName":"vm-pr-core-dc01",
-                    "DSCConfigurationName":"ADRole"
+                    "serviceIdentifier": "web",
+                    "VMName": "vm-app1-web-01",
+                    "DSCConfigurationName":"WebServerRole"
                 },
                 {
-                    "serviceIdentifier":"dc",
-                    "VMName":"vm-pr-core-dc02",
-                    "DSCConfigurationName":"ADRole"
+                    "serviceIdentifier": "web",
+                    "VMName": "vm-app1-web-02",
+                    "DSCConfigurationName":"WebServerRole"
                 },
                 {
-                    "serviceIdentifier":"mgt",
-                    "VMName":"vm-pr-core-jb01",
-                    "DSCConfigurationName":"RSATFeature"
-                }
+                    "serviceIdentifier": "app",
+                    "VMName": "vm-app1-app-01",
+                    "DSCConfigurationName":"WebServerRole"
+                },
+                {
+                    "serviceIdentifier": "app",
+                    "VMName": "vm-app1-app-02",
+                    "DSCConfigurationName":"WebServerRole"
+                },
                 
             ]
         }
