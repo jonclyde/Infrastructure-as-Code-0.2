@@ -97,7 +97,8 @@
             },
             "copy": {
                 "name": "dscconfigurations",
-                "count": "[length(parameters('DSCConfigurations'))]"
+                "count": "[length(parameters('DSCConfigurations'))]",
+                "mode": "Serial"
             }
         }
     ],
