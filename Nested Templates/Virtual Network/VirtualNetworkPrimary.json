@@ -23,7 +23,7 @@
         "VMstoDeploy": {
             "type": "array"
         },
-        "identifier": {
+        "Identifier": {
             "type": "string"
         },
         "subnetsToDeploy": {
