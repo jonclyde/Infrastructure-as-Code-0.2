@@ -93,9 +93,6 @@ Param(
                     $NewRouteTableConfigPR = Add-AzRouteConfig -Name $routeNamePRSubnet -AddressPrefix $OtherSubnetAddressRangePR -NextHopType "VirtualAppliance" -NextHopIpAddress $FirewallIPPrimary -RouteTable $routetablePR
                     
                     if($DeployDR -eq $true){
-                        $OtherSubnetAddressRangeDR = $OtherSubnet.OtherSubnetAddressRangeDR
-                        
-    
                         Write-Host "Add route (other subnet, same vnet DR): spoke $spoke, routename $routeNameDRSubnet, addressprefix $OtherSubnetAddressRangeDR, routetable $routetablenameDR"
                         
                         $NewRouteTableConfigDR = Add-AzRouteConfig -Name $routeNameDRSubnet -AddressPrefix $OtherSubnetAddressRangeDR -NextHopType "VirtualAppliance" -NextHopIpAddress $FirewallIPDR -RouteTable $routetableDR

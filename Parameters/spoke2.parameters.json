@@ -2,13 +2,13 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "VNAddressRangePrimary":{
+        "VNAddressRangePrimary": {
             "value": "10.0.8.0/22"
         },
-        "VNAddressRangeDR":{
+        "VNAddressRangeDR": {
             "value": "10.1.8.0/22"
         },
-        "Identifier":{
+        "Identifier": {
             "value": "rds"
         },
         "subnetsToDeploy": {
@@ -35,7 +35,6 @@
                 }
             ]
         },
-        
         "DefaultPw": {
             "reference": {
                 "keyVault": {
@@ -47,6 +46,6 @@
         "Services": {},
         "VMstoDeploy": {},
         "DataDiskstoDeploy": {},
-        "DSCConfigurations":{}
+        "DSCConfigurations": {}
     }
 }

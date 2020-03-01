@@ -205,7 +205,7 @@ Param(
         #VM spe<cific changes 
         $vmlist = (Get-Content $VMsParametersFile | convertfrom-json).parameters.vmstodeploy.value | Where-Object{$_.serviceIdentifier -eq $serviceidentifier}
         
-        $AutomationAccName = "aa-pr-" + $Identifier + "-aut-01" 
+        $AutomationAccName = "aa-pr-core-aut-01" 
         
         New-AzResourceGroupDeployment -AutomationRG $AutomationRG -AutomationAccName $AutomationAccName -ResourceGroupName $serviceRGName -TemplateParameterFile $VMsParametersFile -TemplateFile $DSCTemplateFile -ServiceIdentifier $serviceidentifier
 

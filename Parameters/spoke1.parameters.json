@@ -2,13 +2,13 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "VNAddressRangePrimary":{
+        "VNAddressRangePrimary": {
             "value": "10.0.4.0/22"
         },
-        "VNAddressRangeDR":{
+        "VNAddressRangeDR": {
             "value": "10.1.4.0/22"
         },
-        "Identifier":{
+        "Identifier": {
             "value": "app1"
         },
         "subnetsToDeploy": {
@@ -47,15 +47,15 @@
             "value": [
                 {
                     "Identifier": "web",
-                    "subnetName": "web",                    
-                    "OS":"WS2019",
+                    "subnetName": "web",
+                    "OS": "WS2019",
                     "loadBalancer": true,
                     "LBType": "HTTPS"
                 },
                 {
                     "Identifier": "app",
-                    "subnetName": "app",                    
-                    "OS":"WS2019",
+                    "subnetName": "app",
+                    "OS": "WS2019",
                     "loadBalancer": true,
                     "LBType": "HTTPS"
                 }
@@ -71,7 +71,7 @@
                 {
                     "serviceIdentifier": "web",
                     "VMName": "vm-app1-web-02",
-                    "OS":"WS2019",
+                    "OS": "WS2019",
                     "publicIP": false
                 },
                 {
@@ -82,7 +82,7 @@
                 {
                     "serviceIdentifier": "app",
                     "VMName": "vm-app1-app-02",
-                    "OS":"WS2019",
+                    "OS": "WS2019",
                     "publicIP": false
                 }
             ]
@@ -115,29 +115,28 @@
                 }
             ]
         },
-        "DSCConfigurations":{
-            "value":[
+        "DSCConfigurations": {
+            "value": [
                 {
                     "serviceIdentifier": "web",
                     "VMName": "vm-app1-web-01",
-                    "DSCConfigurationName":"WebServerRole"
+                    "DSCConfigurationName": "WebServerRole"
                 },
                 {
                     "serviceIdentifier": "web",
                     "VMName": "vm-app1-web-02",
-                    "DSCConfigurationName":"WebServerRole"
+                    "DSCConfigurationName": "WebServerRole"
                 },
                 {
                     "serviceIdentifier": "app",
                     "VMName": "vm-app1-app-01",
-                    "DSCConfigurationName":"WebServerRole"
+                    "DSCConfigurationName": "WebServerRole"
                 },
                 {
                     "serviceIdentifier": "app",
                     "VMName": "vm-app1-app-02",
-                    "DSCConfigurationName":"WebServerRole"
-                },
-                
+                    "DSCConfigurationName": "WebServerRole"
+                }
             ]
         }
     }

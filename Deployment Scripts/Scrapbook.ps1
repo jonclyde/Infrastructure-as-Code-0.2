@@ -91,7 +91,7 @@ cd "C:\Users\jon\repos\Infrastructure-as-Code-0.2\Deployment Scripts"
                 )
 
 
-.\DeployRouting2.ps1 -Spoke "hub" -Identifier "core" -LocationPrimary "westeurope" -LocationDR "northeurope" -DeployDR "true" -DeployFirewalls "true" -FirewallIPPrimary "10.0.0.6" -FirewallIPDR "10.0.0.9" -FirewallHubSubnetIdentifier "Firewall"
+.\DeployRouting.ps1 -Spoke "hub" -Identifier "core" -LocationPrimary "westeurope" -LocationDR "northeurope" -DeployDR "true" -DeployFirewalls "true" -FirewallIPPrimary "10.0.0.6" -FirewallIPDR "10.1.0.6" -FirewallHubSubnetIdentifier "Firewall"
 
 
     
