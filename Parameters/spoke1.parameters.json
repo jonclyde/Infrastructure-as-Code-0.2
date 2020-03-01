@@ -49,6 +49,9 @@
                     "Identifier": "web",
                     "subnetName": "web",
                     "OS": "WS2019",
+                    "Encrypt":true,
+                    "Antimalware": true,
+                    "Monitor": true,
                     "loadBalancer": true,
                     "LBType": "HTTPS"
                 },
@@ -56,6 +59,9 @@
                     "Identifier": "app",
                     "subnetName": "app",
                     "OS": "WS2019",
+                    "Encrypt":true,
+                    "Antimalware": true,
+                    "Monitor": true,
                     "loadBalancer": true,
                     "LBType": "HTTPS"
                 }
