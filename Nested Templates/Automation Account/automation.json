@@ -24,7 +24,8 @@
     },
     "variables": {
         "a-accname":"[concat('aa-',parameters('EnvironmentIdentifier'),'-',parameters('identifier'),'-aut-01')]",
-        "DscBlobContainer":"[concat('https://',parameters('AutomationStorageAccount'),'.blob.core.windows.net/dscconfigurations/')]"
+        "DscBlobContainer":"[concat('https://',parameters('AutomationStorageAccount'),'.blob.core.windows.net/dscconfigurations/')]",
+        "DomainJoinUN":"[concat('jcly.de','\\',parameters('DefaultUsername'))]"
     },
     "resources": [
         {
@@ -38,6 +39,20 @@
                 }
             }
         },
+        {
+            "name": "[concat(variables('a-accname'),'/domainJoinCredential')]",
+            "type": "Microsoft.Automation/automationAccounts/credentials",
+            "apiVersion": "2018-01-15",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[variables('a-accname')]"
+            ],
+            "properties": {
+                "userName": "[variables('DomainJoinUN')]",
+                "password": "[parameters('DefaultPw')]"
+            }
+        },
+        
         {
             "name": "[concat(variables('a-accname'),'/domainCredential')]",
             "type": "Microsoft.Automation/automationAccounts/credentials",
