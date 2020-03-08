@@ -29,11 +29,11 @@
         "dscResources": {
             "xActiveDirectory": {
                 "name": "xActiveDirectory",
-                "url": "https://www.powershellgallery.com/packages/xActiveDirectory/3.0.0.0"
+                "url": "https://devopsgallerystorage.blob.core.windows.net/packages/xactivedirectory.2.16.0.nupkg"
             },
             "xStorage": {
                 "name": "xStorage",
-                "url": "https://www.powershellgallery.com/packages/xStorage/3.4.0.0"
+                "url": "https://devopsgallerystorage.blob.core.windows.net/packages/xstorage.3.2.0.nupkg"
             },
             "xDSCDomainJoin": {
                 "name": "xDSCDomainJoin",
