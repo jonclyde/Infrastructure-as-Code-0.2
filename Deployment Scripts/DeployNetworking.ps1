@@ -10,7 +10,11 @@ Param(
         [Parameter(Mandatory=$true)]
         $LocationPrimary,
         [Parameter(Mandatory=$true)]
-        $LocationDR
+        $LocationDR,
+        [Parameter(Mandatory=$true)]
+        $DNSPrimary,
+        [Parameter(Mandatory=$true)]
+        $DNSSecondary
     )
 
     Write-Host "--------------------------------"
@@ -56,7 +60,9 @@ Param(
                                       -ResourceGroupName $RGNameDR `
                                       -Identifier $Identifier `
                                       -VNName $VNNameDR `
-                                      -EnvironmentIdentifier "dr"
+                                      -EnvironmentIdentifier "dr" `
+                                      -DNSPrimary $DNSPrimary `
+                                      -DNSSecondary $DNSSecondary
         }
         
         #Deploy VNET peering (for spokes only)

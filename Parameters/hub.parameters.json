@@ -104,17 +104,17 @@
                 {
                     "serviceIdentifier":"dc",
                     "VMName":"vm-pr-core-dc01",
-                    "DSCConfigurationName":"ADRole"
+                    "DSCConfigurationName":"FirstDomainController"
                 },
                 {
                     "serviceIdentifier":"dc",
                     "VMName":"vm-pr-core-dc02",
-                    "DSCConfigurationName":"ADRole"
+                    "DSCConfigurationName":"OtherDomainController"
                 },
                 {
                     "serviceIdentifier":"mgt",
                     "VMName":"vm-pr-core-jb01",
-                    "DSCConfigurationName":"RSATFeature"
+                    "DSCConfigurationName":"Management"
                 }
                 
             ]

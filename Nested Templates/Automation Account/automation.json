@@ -6,7 +6,7 @@
             "type": "string",
             "defaultValue": "core"
         },
-        "EnvironmentIdentifier":{
+        "EnvironmentIdentifier": {
             "type": "string"
         },
         "DefaultUsername": {
@@ -19,13 +19,31 @@
             "type": "array"
         },
         "AutomationStorageAccount": {
-            "type":"string"
+            "type": "string"
         }
     },
     "variables": {
-        "a-accname":"[concat('aa-',parameters('EnvironmentIdentifier'),'-',parameters('identifier'),'-aut-01')]",
-        "DscBlobContainer":"[concat('https://',parameters('AutomationStorageAccount'),'.blob.core.windows.net/dscconfigurations/')]",
-        "DomainJoinUN":"[concat('jcly.de','\\',parameters('DefaultUsername'))]"
+        "a-accname": "[concat('aa-',parameters('EnvironmentIdentifier'),'-',parameters('identifier'),'-aut-01')]",
+        "DscBlobContainer": "[concat('https://',parameters('AutomationStorageAccount'),'.blob.core.windows.net/dscconfigurations/')]",
+        "DomainJoinUN": "[concat('jcly.de','\\',parameters('DefaultUsername'))]",
+        "dscResources": {
+            "xActiveDirectory": {
+                "name": "xActiveDirectory",
+                "url": "https://www.powershellgallery.com/packages/xActiveDirectory/3.0.0.0"
+            },
+            "xStorage": {
+                "name": "xStorage",
+                "url": "https://www.powershellgallery.com/packages/xStorage/3.4.0.0"
+            },
+            "xDSCDomainJoin": {
+                "name": "xDSCDomainJoin",
+                "url": "https://www.powershellgallery.com/packages/xDSCDomainjoin/1.2.23"
+            },
+            "ComputerManagementDsc": {
+                "name": "ComputerManagementDsc",
+                "url": "https://www.powershellgallery.com/packages/ComputerManagementDsc/8.0.0"
+            }            
+        }
     },
     "resources": [
         {
@@ -52,7 +70,6 @@
                 "password": "[parameters('DefaultPw')]"
             }
         },
-        
         {
             "name": "[concat(variables('a-accname'),'/domainCredential')]",
             "type": "Microsoft.Automation/automationAccounts/credentials",
@@ -77,6 +94,62 @@
             "properties": {
                 "userName": "[parameters('DefaultUsername')]",
                 "password": "[parameters('DefaultPw')]"
+            }
+        },
+        {
+            "name": "[variables('dscResources').xActiveDirectory.name]",
+            "type": "modules",
+            "apiVersion": "2018-01-15",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[variables('a-accname')]"
+            ],
+            "properties": {
+                "contentLink": {
+                    "uri": "[variables('dscResources').xActiveDirectory.url]"
+                }
+            }
+        },
+        {
+            "name": "[variables('dscResources').xStorage.name]",
+            "type": "modules",
+            "apiVersion": "2018-01-15",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[variables('a-accname')]"
+            ],
+            "properties": {
+                "contentLink": {
+                    "uri": "[variables('dscResources').xStorage.url]"
+                }
+            }
+        },
+        {
+            "name": "[variables('dscResources').xDSCDomainJoin.name]",
+            "type": "modules",
+            "apiVersion": "2018-01-15",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[variables('a-accname')]"
+            ],
+            "properties": {
+                "contentLink": {
+                    "uri": "[variables('dscResources').xDSCDomainJoin.url]"
+                }
+            }
+        },
+        {
+            "name": "[variables('dscResources').ComputerManagementDsc.name]",
+            "type": "modules",
+            "apiVersion": "2018-01-15",
+            "location": "[resourceGroup().location]",
+            "dependsOn": [
+                "[variables('a-accname')]"
+            ],
+            "properties": {
+                "contentLink": {
+                    "uri": "[variables('dscResources').ComputerManagementDsc.url]"
+                }
             }
         },
         {
@@ -108,7 +181,11 @@
             "tags": {},
             "dependsOn": [
                 "[variables('a-accname')]",
-                "[parameters('dscConfigurations')[CopyIndex()].ConfigName]"
+                "[parameters('dscConfigurations')[CopyIndex()].ConfigName]",
+                "[variables('dscResources').xActiveDirectory.name]",
+                "[variables('dscResources').xStorage.name]",
+                "[variables('dscResources').xDSCDomainJoin.name]",
+                "[variables('dscResources').ComputerManagementDsc.name]"
             ],
             "properties": {
                 "configuration": {
@@ -122,7 +199,6 @@
                 "mode": "Serial"
             }
         }
-
     ],
     "outputs": {}
 }

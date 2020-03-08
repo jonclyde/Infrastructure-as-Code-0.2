@@ -34,6 +34,12 @@
         },
         "EnvironmentIdentifier": {
             "type": "string"
+        },
+        "DNSPrimary": {
+            "type": "string"
+        },
+        "DNSSecondary": {
+            "type": "string"
         }
     },
     "variables": {
@@ -108,6 +114,13 @@
                 "addressSpace": {
                     "addressPrefixes": [
                         "[parameters('VNAddressRangeDR')]"
+                    ]
+                },
+                "dhcpOptions": {
+                    "dnsServers": [
+                        "[parameters('DNSPrimary')]",
+                        "[parameters('DNSSecondary')]"
+
                     ]
                 }
             },

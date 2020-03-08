@@ -27,6 +27,14 @@
                 {
                     "ConfigName": "Template",
                     "ConfigFileName": "Template.ps1"
+                },
+                {
+                    "ConfigName": "SQLVM",
+                    "ConfigFileName": "SQLVM.ps1"
+                },
+                {
+                    "ConfigName": "Management",
+                    "ConfigFileName": "Management.ps1"
                 }
             ]
         },
