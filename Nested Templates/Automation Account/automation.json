@@ -29,19 +29,19 @@
         "dscResources": {
             "xActiveDirectory": {
                 "name": "xActiveDirectory",
-                "url": "https://devopsgallerystorage.blob.core.windows.net/packages/xactivedirectory.2.16.0.nupkg"
+                "url": "https://psg-prod-eastus.azureedge.net/packages/xactivedirectory.3.0.0.nupkg"
             },
             "xStorage": {
                 "name": "xStorage",
-                "url": "https://devopsgallerystorage.blob.core.windows.net/packages/xstorage.3.2.0.nupkg"
+                "url": "https://psg-prod-eastus.azureedge.net/packages/xstorage.3.4.0.nupkg"
             },
             "xDSCDomainJoin": {
                 "name": "xDSCDomainJoin",
-                "url": "https://www.powershellgallery.com/packages/xDSCDomainjoin/1.2.23"
+                "url": "https://psg-prod-eastus.azureedge.net/packages/xdscdomainjoin.1.2.23.nupkg"
             },
             "ComputerManagementDsc": {
                 "name": "ComputerManagementDsc",
-                "url": "https://www.powershellgallery.com/packages/ComputerManagementDsc/8.0.0"
+                "url": "https://psg-prod-eastus.azureedge.net/packages/computermanagementdsc.8.0.0.nupkg"
             }            
         }
     },
