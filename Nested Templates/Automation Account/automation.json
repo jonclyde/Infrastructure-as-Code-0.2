@@ -173,8 +173,7 @@
                 "count": "[length(parameters('dscConfigurations'))]",
                 "mode": "Serial"
             }
-        }
-        /*
+        },
         {
             "name": "[concat(variables('a-accname'),'/compilation',parameters('dscConfigurations')[CopyIndex()].ConfigName)]",
             "type": "Microsoft.Automation/automationAccounts/compilationjobs",
@@ -199,7 +198,7 @@
                 "count": "[length(parameters('dscConfigurations'))]",
                 "mode": "Serial"
             }
-        }*/
+        }
     ],
     "outputs": {}
 }
