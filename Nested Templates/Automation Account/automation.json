@@ -98,7 +98,7 @@
         },
         {
             "name": "[variables('dscResources').xActiveDirectory.name]",
-            "type": "modules",
+            "type": "Microsoft.Automation/automationAccounts/modules",
             "apiVersion": "2018-01-15",
             "location": "[resourceGroup().location]",
             "dependsOn": [
@@ -112,7 +112,7 @@
         },
         {
             "name": "[variables('dscResources').xStorage.name]",
-            "type": "modules",
+            "type": "Microsoft.Automation/automationAccounts/modules",
             "apiVersion": "2018-01-15",
             "location": "[resourceGroup().location]",
             "dependsOn": [
@@ -126,7 +126,7 @@
         },
         {
             "name": "[variables('dscResources').xDSCDomainJoin.name]",
-            "type": "modules",
+            "type": "Microsoft.Automation/automationAccounts/modules",
             "apiVersion": "2018-01-15",
             "location": "[resourceGroup().location]",
             "dependsOn": [
@@ -140,7 +140,7 @@
         },
         {
             "name": "[variables('dscResources').ComputerManagementDsc.name]",
-            "type": "modules",
+            "type": "Microsoft.Automation/automationAccounts/modules",
             "apiVersion": "2018-01-15",
             "location": "[resourceGroup().location]",
             "dependsOn": [
