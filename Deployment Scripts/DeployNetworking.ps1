@@ -50,7 +50,9 @@ Param(
                                       -ResourceGroupName $RGNamePrimary `
                                       -Identifier $Identifier `
                                       -VNName $VNNamePrimary `
-                                      -EnvironmentIdentifier "pr"
+                                      -EnvironmentIdentifier "pr"`
+                                      -DNSPrimary $DNSPrimary `
+                                      -DNSSecondary $DNSSecondary
 
         if($DeployDR -eq $true){
             New-AzResourceGroup -Name $RGNameDR -Location $LocationDR -Force
