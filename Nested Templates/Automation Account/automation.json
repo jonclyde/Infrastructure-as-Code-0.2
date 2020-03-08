@@ -97,7 +97,7 @@
             }
         },
         {
-            "name": "[variables('dscResources').xActiveDirectory.name]",
+            "name": "[concat(variables('a-accname'),'/',variables('dscResources').xActiveDirectory.name)]",
             "type": "Microsoft.Automation/automationAccounts/modules",
             "apiVersion": "2018-01-15",
             "location": "[resourceGroup().location]",
@@ -111,7 +111,7 @@
             }
         },
         {
-            "name": "[variables('dscResources').xStorage.name]",
+            "name": "[concat(variables('a-accname'),'/',variables('dscResources').xStorage.name)]",
             "type": "Microsoft.Automation/automationAccounts/modules",
             "apiVersion": "2018-01-15",
             "location": "[resourceGroup().location]",
@@ -125,7 +125,7 @@
             }
         },
         {
-            "name": "[variables('dscResources').xDSCDomainJoin.name]",
+            "name": "[concat(variables('a-accname'),'/',variables('dscResources').xDSCDomainJoin.name)]",
             "type": "Microsoft.Automation/automationAccounts/modules",
             "apiVersion": "2018-01-15",
             "location": "[resourceGroup().location]",
@@ -139,7 +139,7 @@
             }
         },
         {
-            "name": "[variables('dscResources').ComputerManagementDsc.name]",
+            "name": "[concat(variables('a-accname'),'/',variables('dscResources').ComputerManagementDsc.name)]",
             "type": "Microsoft.Automation/automationAccounts/modules",
             "apiVersion": "2018-01-15",
             "location": "[resourceGroup().location]",
