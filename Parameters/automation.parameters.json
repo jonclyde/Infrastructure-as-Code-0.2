@@ -15,6 +15,18 @@
                 {
                     "ConfigName": "WebServerRole",
                     "ConfigFileName": "WebServerRole.ps1"
+                },
+                {
+                    "ConfigName": "FirstDomainController",
+                    "ConfigFileName": "FirstDomainController.ps1"
+                },
+                {
+                    "ConfigName": "OtherDomainController",
+                    "ConfigFileName": "OtherDomainController.ps1"
+                },
+                {
+                    "ConfigName": "Template",
+                    "ConfigFileName": "Template.ps1"
                 }
             ]
         },
