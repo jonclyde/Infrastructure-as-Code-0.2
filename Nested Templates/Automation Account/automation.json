@@ -117,8 +117,7 @@
             },
             "copy": {
                 "name": "modules",
-                "count": "[length(parameters('AutomationModules'))]",
-                "mode": "Serial"
+                "count": "[length(parameters('AutomationModules'))]"
             }
         },
         {
