@@ -37,6 +37,30 @@
                     "ConfigFileName": "Management.ps1"
                 }
             ]
+        }, 
+        "AutomationModules": {
+            "value": [
+                {
+                    "Name": "xActiveDirectory",
+                    "Version": "3.0.0"
+                },
+                {
+                    "Name": "xstorage",
+                    "Version": "3.4.0"
+                },
+                {
+                    "Name": "xdscdomainjoin",
+                    "Version": "1.2.23"
+                },
+                {
+                    "Name": "computermanagementdsc",
+                    "Version": "8.0.0"
+                },
+                {
+                    "Name": "SqlServerDsc",
+                    "Version": "13.3.0"
+                }
+            ]
         },
         "DefaultPw": {
             "reference": {

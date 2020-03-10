@@ -18,6 +18,9 @@
         "dscConfigurations": {
             "type": "array"
         },
+        "AutomationModules": {
+            "type": "array"
+        },
         "AutomationStorageAccount": {
             "type": "string"
         }
@@ -26,6 +29,9 @@
         "a-accname": "[concat('aa-',parameters('EnvironmentIdentifier'),'-',parameters('identifier'),'-aut-01')]",
         "DscBlobContainer": "[concat('https://',parameters('AutomationStorageAccount'),'.blob.core.windows.net/dscconfigurations/')]",
         "DomainJoinUN": "[concat('jcly.de','\\',parameters('DefaultUsername'))]",
+        /*
+            Better way to add modules : https://kvaes.wordpress.com/2016/05/16/azure-automation-adding-modules-via-powershell/
+        */
         "dscResources": {
             "xActiveDirectory": {
                 "name": "xActiveDirectory",
@@ -97,7 +103,7 @@
             }
         },
         {
-            "name": "[concat(variables('a-accname'),'/',variables('dscResources').xActiveDirectory.name)]",
+            "name": "[concat(variables('a-accname'),'/',parameters('AutomationModules')[CopyIndex()].Name)]",
             "type": "Microsoft.Automation/automationAccounts/modules",
             "apiVersion": "2018-01-15",
             "location": "[resourceGroup().location]",
@@ -106,50 +112,13 @@
             ],
             "properties": {
                 "contentLink": {
-                    "uri": "[variables('dscResources').xActiveDirectory.url]"
+                    "uri": "[concat('https://www.powershellgallery.com/api/v2/package/',parameters('AutomationModules')[CopyIndex()].Name,'/',parameters('AutomationModules')[CopyIndex()].Version)]"
                 }
-            }
-        },
-        {
-            "name": "[concat(variables('a-accname'),'/',variables('dscResources').xStorage.name)]",
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2018-01-15",
-            "location": "[resourceGroup().location]",
-            "dependsOn": [
-                "[variables('a-accname')]"
-            ],
-            "properties": {
-                "contentLink": {
-                    "uri": "[variables('dscResources').xStorage.url]"
-                }
-            }
-        },
-        {
-            "name": "[concat(variables('a-accname'),'/',variables('dscResources').xDSCDomainJoin.name)]",
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2018-01-15",
-            "location": "[resourceGroup().location]",
-            "dependsOn": [
-                "[variables('a-accname')]"
-            ],
-            "properties": {
-                "contentLink": {
-                    "uri": "[variables('dscResources').xDSCDomainJoin.url]"
-                }
-            }
-        },
-        {
-            "name": "[concat(variables('a-accname'),'/',variables('dscResources').ComputerManagementDsc.name)]",
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2018-01-15",
-            "location": "[resourceGroup().location]",
-            "dependsOn": [
-                "[variables('a-accname')]"
-            ],
-            "properties": {
-                "contentLink": {
-                    "uri": "[variables('dscResources').ComputerManagementDsc.url]"
-                }
+            },
+            "copy": {
+                "name": "modules",
+                "count": "[length(parameters('AutomationModules'))]",
+                "mode": "Serial"
             }
         },
         {
@@ -173,7 +142,8 @@
                 "count": "[length(parameters('dscConfigurations'))]",
                 "mode": "Serial"
             }
-        },
+        }
+        /*
         {
             "name": "[concat(variables('a-accname'),'/compilation',parameters('dscConfigurations')[CopyIndex()].ConfigName)]",
             "type": "Microsoft.Automation/automationAccounts/compilationjobs",
@@ -198,7 +168,7 @@
                 "count": "[length(parameters('dscConfigurations'))]",
                 "mode": "Serial"
             }
-        }
+        }*/
     ],
     "outputs": {}
 }
