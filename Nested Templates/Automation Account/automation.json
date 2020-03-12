@@ -23,6 +23,9 @@
         },
         "AutomationStorageAccount": {
             "type": "string"
+        },
+        "DomainName": {
+            "type": "string"
         }
     },
     "variables": {
@@ -140,6 +143,19 @@
                 "name": "configurations",
                 "count": "[length(parameters('dscConfigurations'))]",
                 "mode": "Serial"
+            }
+        },
+        {
+            "name": "[concat(variables('a-accname'),'/DomainName')]",
+            "type": "Microsoft.Automation/automationAccounts/variables",
+            "apiVersion": "2015-10-31",
+            "dependsOn": [
+                "[variables('a-accname')]"
+            ],
+            "properties": {
+                "value": "[parameters('DomainName')]",
+                "description": "Active Directory domain name variable",
+                "isEncrypted": true
             }
         }
         /*
