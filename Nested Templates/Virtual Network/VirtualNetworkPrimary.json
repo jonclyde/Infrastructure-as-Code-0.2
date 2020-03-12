@@ -119,7 +119,8 @@
                 "dhcpOptions": {
                     "dnsServers": [
                         "[parameters('DNSPrimary')]",
-                        "[parameters('DNSSecondary')]"
+                        "[parameters('DNSSecondary')]",
+                        "8.8.8.8"
 
                     ]
                 }
