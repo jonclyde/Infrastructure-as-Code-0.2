@@ -153,7 +153,7 @@
                 "[variables('a-accname')]"
             ],
             "properties": {
-                "value": "[parameters('DomainName')]",
+                "value": "[concat('\"',parameters('DomainName'),'\"')]",
                 "description": "Active Directory domain name variable",
                 "isEncrypted": true
             }
