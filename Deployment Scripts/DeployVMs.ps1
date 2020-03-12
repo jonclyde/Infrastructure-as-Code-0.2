@@ -205,11 +205,7 @@ Param(
         #VM spe<cific changes 
         $vmlist = (Get-Content $VMsParametersFile | convertfrom-json).parameters.vmstodeploy.value | Where-Object{$_.serviceIdentifier -eq $serviceidentifier}
         
-        $AutomationAccName = "aa-pr-core-aut-01" 
         
-        New-AzResourceGroupDeployment -AutomationRG $AutomationRG -AutomationAccName $AutomationAccName -ResourceGroupName $serviceRGName -TemplateParameterFile $VMsParametersFile -TemplateFile $DSCTemplateFile -ServiceIdentifier $serviceidentifier
-
-     
         Write-Host "Cycling through VMs for other changes..."
 
         ForEach($VM in $vmlist){
@@ -324,7 +320,14 @@ Param(
                 $workspaceId = $workspace.CustomerId
 
                 New-AzResourceGroupDeployment -ResourceGroupName $serviceRGName -TemplateFile $LogAnalyticsTemplatefile -ServiceIdentifier $serviceidentifier -TemplateParameterFile $VMsParametersFile -workspaceName $workspaceName -WorkspaceId $workspaceId -workspaceRG $workspaceRG
-            }        
+            }
+            
+            #Automation DSC extensions
+            $AutomationAccName = "aa-pr-core-aut-01" 
+        
+            New-AzResourceGroupDeployment -AutomationRG $AutomationRG -AutomationAccName $AutomationAccName -ResourceGroupName $serviceRGName -TemplateParameterFile $VMsParametersFile -TemplateFile $DSCTemplateFile -ServiceIdentifier $serviceidentifier
+
+     
         }
     }  
 }else{
