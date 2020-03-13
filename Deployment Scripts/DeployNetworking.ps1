@@ -75,8 +75,7 @@ Param(
             
             New-AzResourceGroupDeployment -TemplateFile $NetPeerTemplateFile -ResourceGroupName $RGNamePrimary -VN1Name $VNNamePrimary -VN2Name $VNNameDR -VN2RG $RGNameDR
         }
-        else{
-
+        elseif ($DeployDR -eq $true) {
             $VNNameHubPrimary = "vn-pr-" + $IdentifierforHub
             $RGNameHubPrimary = "rg-pr-" + $IdentifierforHub + "-inf"
 
@@ -90,7 +89,9 @@ Param(
             Write-Host "Deploy vnet peering between $VNNamePrimary and $VNNameHubPrimary"
 
             New-AzResourceGroupDeployment -TemplateFile $NetPeerTemplateFile -ResourceGroupName $RGNameHubDR -VN1Name $VNNameHubDR -VN2Name $VNNameDR -VN2RG $RGNameDR
-        
+        }
+        else{
+            Write-Host "Deploy DR is set to false"
         }
 
     }else{
