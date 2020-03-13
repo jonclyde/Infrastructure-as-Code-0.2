@@ -11,6 +11,9 @@
         "Identifier":{
             "value": "core"
         },
+        "DeployDR":{
+            "value": true
+        },
         "subnetsToDeploy": {
             "value": [
                 {
@@ -27,6 +30,11 @@
                     "subnetName": "domain",
                     "subnetAddressRangePrimary": "10.0.0.128/27",
                     "subnetAddressRangeDR": "10.1.0.128/27"
+                },
+                {
+                    "subnetName": "appgateway",
+                    "subnetAddressRangePrimary": "10.0.0.192/27",
+                    "subnetAddressRangeDR": "10.1.0.192/27"
                 }
             ]
         },

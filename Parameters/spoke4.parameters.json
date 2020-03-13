@@ -3,33 +3,33 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "VNAddressRangePrimary": {
-            "value": "10.0.4.0/22"
+            "value": "10.0.16.0/22"
         },
         "VNAddressRangeDR": {
-            "value": "10.1.4.0/22"
+            "value": "10.1.16.0/22"
         },
         "Identifier": {
-            "value": "dev"
+            "value": "prd"
         },
         "DeployDR":{
-            "value": false
+            "value": true
         },
         "subnetsToDeploy": {
             "value": [
                 {
                     "subnetName": "app",
-                    "subnetAddressRangePrimary": "10.0.4.0/27",
-                    "subnetAddressRangeDR": "10.1.4.0/27"
+                    "subnetAddressRangePrimary": "10.0.16.0/27",
+                    "subnetAddressRangeDR": "10.1.16.0/27"
                 },
                 {
                     "subnetName": "web",
-                    "subnetAddressRangePrimary": "10.0.5.0/27",
-                    "subnetAddressRangeDR": "10.1.5.0/27"
+                    "subnetAddressRangePrimary": "10.0.17.0/27",
+                    "subnetAddressRangeDR": "10.1.17.0/27"
                 },
                 {
                     "subnetName": "sql",
-                    "subnetAddressRangePrimary": "10.0.6.0/27",
-                    "subnetAddressRangeDR": "10.1.6.0/27"
+                    "subnetAddressRangePrimary": "10.0.18.0/27",
+                    "subnetAddressRangeDR": "10.1.18.0/27"
                 }
             ]
         },
@@ -69,12 +69,24 @@
             "value": [
                 {
                     "serviceIdentifier": "web",
-                    "VMName": "vm-dev-web-01",
+                    "VMName": "vm-prd-web-01",
+                    "publicIP": false
+                },
+                {
+                    "serviceIdentifier": "web",
+                    "VMName": "vm-prd-web-02",
+                    "OS": "WS2019",
                     "publicIP": false
                 },
                 {
                     "serviceIdentifier": "app",
-                    "VMName": "vm-dev-app-01",
+                    "VMName": "vm-prd-app-01",
+                    "publicIP": false
+                },
+                {
+                    "serviceIdentifier": "app",
+                    "VMName": "vm-prd-app-02",
+                    "OS": "WS2019",
                     "publicIP": false
                 }
             ]
@@ -83,15 +95,27 @@
             "value": [
                 {
                     "serviceIdentifier": "web",
-                    "VMName": "vm-dev-web-01",
+                    "VMName": "vm-prd-web-01",
+                    "diskSizeGB": 32,
+                    "lun": 0
+                },
+                {
+                    "serviceIdentifier": "web",
+                    "VMName": "vm-prd-web-02",
+                    "diskSizeGB": 32,
+                    "lun": 1
+                },
+                {
+                    "serviceIdentifier": "app",
+                    "VMName": "vm-prd-app-01",
                     "diskSizeGB": 32,
                     "lun": 0
                 },
                 {
                     "serviceIdentifier": "app",
-                    "VMName": "vm-dev-app-01",
+                    "VMName": "vm-prd-app-02",
                     "diskSizeGB": 32,
-                    "lun": 0
+                    "lun": 1
                 }
             ]
         },
@@ -99,12 +123,22 @@
             "value": [
                 {
                     "serviceIdentifier": "web",
-                    "VMName": "vm-dev-web-01",
+                    "VMName": "vm-prd-web-01",
+                    "DSCConfigurationName": "WebServerRole"
+                },
+                {
+                    "serviceIdentifier": "web",
+                    "VMName": "vm-prd-web-02",
                     "DSCConfigurationName": "WebServerRole"
                 },
                 {
                     "serviceIdentifier": "app",
-                    "VMName": "vm-dev-app-01",
+                    "VMName": "vm-prd-app-01",
+                    "DSCConfigurationName": "WebServerRole"
+                },
+                {
+                    "serviceIdentifier": "app",
+                    "VMName": "vm-prd-app-02",
                     "DSCConfigurationName": "WebServerRole"
                 }
             ]

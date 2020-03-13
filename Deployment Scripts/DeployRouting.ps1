@@ -48,7 +48,8 @@ Param(
         
         if(Test-Path $SpokeNetworkParamFile){
             Write-Host "$spoke parameters file exists"
-
+            
+            $DeployDR = (Get-Content $SpokeParamFile  | convertfrom-json).parameters.DeployDR.value
             $Subnets = (Get-Content $SpokeNetworkParamFile | ConvertFrom-Json).parameters.subnetstodeploy.value
             $NoneFwSubnets = $Subnets | Where-Object{$_.SubnetName -ne $FirewallHubSubnetIdentifier}
 

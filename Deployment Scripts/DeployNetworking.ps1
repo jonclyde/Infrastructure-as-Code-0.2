@@ -40,7 +40,8 @@ Param(
         $RGNamePrimary = "rg-pr-" + $Identifier + "-inf"
         $RGNameDR = "rg-dr-" + $Identifier + "-inf"
         $VNNamePrimary = "vn-pr-" + $Identifier
-        $VNNameDR = "vn-dr-" + $Identifier 
+        $VNNameDR = "vn-dr-" + $Identifier
+        $DeployDR = (Get-Content $SpokeParamFile  | convertfrom-json).parameters.DeployDR.value
         
         New-AzResourceGroup -Name $RGNamePrimary -Location $LocationPrimary -Force
 

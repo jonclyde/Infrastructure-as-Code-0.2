@@ -11,6 +11,9 @@
         "VNAddressRangeDR":{
             "type": "string"
         },
+        "DeployDr":{
+            "type": "bool"
+        },
         "SubnetstoDeploy": {
             "type": "array"
         },

@@ -9,29 +9,27 @@
             "value": "10.1.8.0/22"
         },
         "Identifier": {
-            "value": "rds"
+            "value": "uat"
+        },
+        "DeployDR":{
+            "value": false
         },
         "subnetsToDeploy": {
             "value": [
                 {
-                    "subnetName": "sessionhosts",
-                    "subnetAddressRangePrimary": "10.0.8.0/24",
-                    "subnetAddressRangeDR": "10.1.8.0/24"
+                    "subnetName": "app",
+                    "subnetAddressRangePrimary": "10.0.8.0/27",
+                    "subnetAddressRangeDR": "10.1.8.0/27"
                 },
                 {
-                    "subnetName": "brokers",
-                    "subnetAddressRangePrimary": "10.0.9.0/24",
-                    "subnetAddressRangeDR": "10.1.9.0/24"
+                    "subnetName": "web",
+                    "subnetAddressRangePrimary": "10.0.9.0/27",
+                    "subnetAddressRangeDR": "10.1.9.0/27"
                 },
                 {
-                    "subnetName": "gatewayweb",
-                    "subnetAddressRangePrimary": "10.0.10.0/24",
-                    "subnetAddressRangeDR": "10.1.10.0/24"
-                },
-                {
-                    "subnetName": "licensing",
-                    "subnetAddressRangePrimary": "10.0.11.0/24",
-                    "subnetAddressRangeDR": "10.1.11.0/24"
+                    "subnetName": "sql",
+                    "subnetAddressRangePrimary": "10.0.10.0/27",
+                    "subnetAddressRangeDR": "10.1.10.0/27"
                 }
             ]
         },
@@ -44,16 +42,72 @@
             }
         },
         "Services": {
-            "value": []
+            "value": [
+                {
+                    "Identifier": "web",
+                    "subnetName": "web",
+                    "OS": "WS2019",
+                    "Encrypt":true,
+                    "Antimalware": true,
+                    "Monitor": true,
+                    "loadBalancer": true,
+                    "LBType": "HTTPS"
+                },
+                {
+                    "Identifier": "app",
+                    "subnetName": "app",
+                    "OS": "WS2019",
+                    "Encrypt":true,
+                    "Antimalware": true,
+                    "Monitor": true,
+                    "loadBalancer": true,
+                    "LBType": "HTTPS"
+                }
+            ]
         },
         "VMstoDeploy": {
-            "value": []
+            "value": [
+                {
+                    "serviceIdentifier": "web",
+                    "VMName": "vm-uat-web-01",
+                    "publicIP": false
+                },
+                {
+                    "serviceIdentifier": "app",
+                    "VMName": "vm-uat-app-01",
+                    "publicIP": false
+                }
+            ]
         },
         "DataDiskstoDeploy": {
-            "value": []
+            "value": [
+                {
+                    "serviceIdentifier": "web",
+                    "VMName": "vm-uat-web-01",
+                    "diskSizeGB": 32,
+                    "lun": 0
+                },
+                {
+                    "serviceIdentifier": "app",
+                    "VMName": "vm-uat-app-01",
+                    "diskSizeGB": 32,
+                    "lun": 0
+                }
+            ]
         },
         "DSCConfigurations": {
-            "value": []
+            "value": [
+                {
+                    "serviceIdentifier": "web",
+                    "VMName": "vm-uat-web-01",
+                    "DSCConfigurationName": "WebServerRole"
+                },
+                {
+                    "serviceIdentifier": "app",
+                    "VMName": "vm-uat-app-01",
+                    "DSCConfigurationName": "WebServerRole"
+                }
+            ]
         }
     }
 }

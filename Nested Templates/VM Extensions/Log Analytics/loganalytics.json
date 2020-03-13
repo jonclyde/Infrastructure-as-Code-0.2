@@ -8,6 +8,9 @@
         "VNAddressRangePrimary": {
             "type": "string"
         },
+        "DeployDr":{
+            "type": "bool"
+        },
         "VNAddressRangeDR": {
             "type": "string"
         },

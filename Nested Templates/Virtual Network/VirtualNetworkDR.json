@@ -8,6 +8,9 @@
         "VNAddressRangeDR": {
             "type": "string"
         },
+        "DeployDr":{
+            "type": "bool"
+        },
         "DataDiskstoDeploy": {
             "type": "array"
         },
