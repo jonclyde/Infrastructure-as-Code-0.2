@@ -85,7 +85,7 @@ Param(
         
         }
         
-        if ($DeployDR -eq $true) {
+        if ($spoke -ne "hub" -and $DeployDR -eq $true) {
             
             $VNNameHubDR = "vn-dr-" + $IdentifierforHub
             $RGNameHubDR = "rg-dr-" + $IdentifierforHub + "-inf"
