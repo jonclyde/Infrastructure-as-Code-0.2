@@ -75,7 +75,7 @@ Param(
             
             New-AzResourceGroupDeployment -TemplateFile $NetPeerTemplateFile -ResourceGroupName $RGNamePrimary -VN1Name $VNNamePrimary -VN2Name $VNNameDR -VN2RG $RGNameDR
         }
-        elseif ($DeployDR -eq $true) {
+        else{
             $VNNameHubPrimary = "vn-pr-" + $IdentifierforHub
             $RGNameHubPrimary = "rg-pr-" + $IdentifierforHub + "-inf"
 
@@ -83,6 +83,10 @@ Param(
 
             New-AzResourceGroupDeployment -TemplateFile $NetPeerTemplateFile -ResourceGroupName $RGNameHubPrimary -VN1Name $VNNameHubPrimary -VN2Name $VNNamePrimary -VN2RG $RGNamePrimary
         
+        }
+        
+        if ($DeployDR -eq $true) {
+            
             $VNNameHubDR = "vn-dr-" + $IdentifierforHub
             $RGNameHubDR = "rg-dr-" + $IdentifierforHub + "-inf"
 
