@@ -49,7 +49,17 @@
         "Services": {
             "value": [
                 {
-                    "Identifier": "dc",
+                    "Identifier": "dc1",
+                    "subnetName": "domain",                    
+                    "OS":"WS2019",
+                    "Encrypt":true,
+                    "Antimalware": true,
+                    "Monitor": true,
+                    "loadBalancer": false,
+                    "LBType": ""
+                },
+                {
+                    "Identifier": "dc2",
                     "subnetName": "domain",                    
                     "OS":"WS2019",
                     "Encrypt":true,
@@ -73,12 +83,12 @@
         "VMstoDeploy": {
             "value": [
                 {
-                    "serviceIdentifier": "dc",
+                    "serviceIdentifier": "dc1",
                     "VMName": "vm-pr-core-dc01",
                     "publicIP": true
                 },
                 {
-                    "serviceIdentifier": "dc",
+                    "serviceIdentifier": "dc2",
                     "VMName": "vm-pr-core-dc02",
                     "OS":"WS2019",
                     "publicIP": true
@@ -94,13 +104,13 @@
         "DataDiskstoDeploy": {
             "value": [
                 {
-                    "serviceIdentifier": "dc",
+                    "serviceIdentifier": "dc1",
                     "VMName": "vm-pr-core-dc01",
                     "diskSizeGB": 32,
                     "lun": 0
                 },
                 {
-                    "serviceIdentifier": "dc",
+                    "serviceIdentifier": "dc2",
                     "VMName": "vm-pr-core-dc02",
                     "diskSizeGB": 32,
                     "lun": 0
@@ -110,12 +120,12 @@
         "DSCConfigurations":{
             "value":[
                 {
-                    "serviceIdentifier":"dc",
+                    "serviceIdentifier":"dc1",
                     "VMName":"vm-pr-core-dc01",
                     "DSCConfigurationName":"FirstDomainController"
                 },
                 {
-                    "serviceIdentifier":"dc",
+                    "serviceIdentifier":"dc2",
                     "VMName":"vm-pr-core-dc02",
                     "DSCConfigurationName":"OtherDomainController"
                 },
