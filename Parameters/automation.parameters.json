@@ -45,8 +45,8 @@
                     "ConfigurationDataFileName": ""
                 },
                 {
-                    "ConfigName": "Management",
-                    "ConfigFileName": "Management.ps1",
+                    "ConfigName": "CustomStates",
+                    "ConfigFileName": "CustomStates.ps1",
                     "ConfigurationDataFileName": "dsc.customstates.configurationdata.psd1"
                 }
             ]
