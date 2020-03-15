@@ -77,7 +77,7 @@
                         },
                         {
                             "Name": "NodeConfigurationName",
-                            "Value": "[concat(parameters('DSCConfigurations')[CopyIndex()].DSCConfigurationName,'.localhost')]",
+                            "Value": "[concat(parameters('DSCConfigurations')[CopyIndex()].DSCConfigurationName,'.',parameters('DSCConfigurations')[CopyIndex()].DSCNodeName)]",
                             "TypeName": "System.String"
                         },
                         {
