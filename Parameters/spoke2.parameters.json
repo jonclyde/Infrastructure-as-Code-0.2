@@ -106,12 +106,14 @@
                 {
                     "serviceIdentifier": "web",
                     "VMName": "vm-uat-web-01",
-                    "DSCConfigurationName": "WebServerRole"
+                    "DSCConfigurationName": "CustomStates",
+                    "DSCNodeName": "WebServer"
                 },
                 {
                     "serviceIdentifier": "app",
                     "VMName": "vm-uat-app-01",
-                    "DSCConfigurationName": "WebServerRole"
+                    "DSCConfigurationName": "CustomStates",
+                    "DSCNodeName": "WebServer"
                 }
             ]
         }

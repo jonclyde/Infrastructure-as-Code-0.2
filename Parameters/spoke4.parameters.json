@@ -136,22 +136,26 @@
                 {
                     "serviceIdentifier": "web",
                     "VMName": "vm-prd-web-01",
-                    "DSCConfigurationName": "WebServerRole"
+                    "DSCConfigurationName": "CustomStates",
+                    "DSCNodeName": "WebServer"
                 },
                 {
                     "serviceIdentifier": "web",
                     "VMName": "vm-prd-web-02",
-                    "DSCConfigurationName": "WebServerRole"
+                    "DSCConfigurationName": "CustomStates",
+                    "DSCNodeName": "WebServer"
                 },
                 {
                     "serviceIdentifier": "app",
                     "VMName": "vm-prd-app-01",
-                    "DSCConfigurationName": "WebServerRole"
+                    "DSCConfigurationName": "CustomStates",
+                    "DSCNodeName": "WebServer"
                 },
                 {
                     "serviceIdentifier": "app",
                     "VMName": "vm-prd-app-02",
-                    "DSCConfigurationName": "WebServerRole"
+                    "DSCConfigurationName": "CustomStates",
+                    "DSCNodeName": "WebServer"
                 }
             ]
         }

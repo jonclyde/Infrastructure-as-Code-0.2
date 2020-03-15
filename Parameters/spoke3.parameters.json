@@ -136,22 +136,26 @@
                 {
                     "serviceIdentifier": "web",
                     "VMName": "vm-pre-web-01",
-                    "DSCConfigurationName": "WebServerRole"
+                    "DSCConfigurationName": "CustomStates",
+                    "DSCNodeName": "WebServer"
                 },
                 {
                     "serviceIdentifier": "web",
                     "VMName": "vm-pre-web-02",
-                    "DSCConfigurationName": "WebServerRole"
+                    "DSCConfigurationName": "CustomStates",
+                    "DSCNodeName": "WebServer"
                 },
                 {
                     "serviceIdentifier": "app",
                     "VMName": "vm-pre-app-01",
-                    "DSCConfigurationName": "WebServerRole"
+                    "DSCConfigurationName": "CustomStates",
+                    "DSCNodeName": "WebServer"
                 },
                 {
                     "serviceIdentifier": "app",
                     "VMName": "vm-pre-app-02",
-                    "DSCConfigurationName": "WebServerRole"
+                    "DSCConfigurationName": "CustomStates",
+                    "DSCNodeName": "WebServer"
                 }
             ]
         }

@@ -31,10 +31,10 @@
     "variables": {
         "a-accname": "[concat('aa-',parameters('EnvironmentIdentifier'),'-',parameters('identifier'),'-aut-01')]",
         "DscBlobContainer": "[concat('https://',parameters('AutomationStorageAccount'),'.blob.core.windows.net/dscconfigurations/')]",
-        "DomainJoinUN": "[concat('jcly.de','\\',parameters('DefaultUsername'))]",
+        "DomainJoinUN": "[concat(parameters('DomainName'),'\\',parameters('DefaultUsername'))]"
         /*
             Better way to add modules : https://kvaes.wordpress.com/2016/05/16/azure-automation-adding-modules-via-powershell/
-        */
+        
         "dscResources": {
             "xActiveDirectory": {
                 "name": "xActiveDirectory",
@@ -52,7 +52,7 @@
                 "name": "ComputerManagementDsc",
                 "url": "https://www.powershellgallery.com/api/v2/package/computermanagementdsc/8.0.0"
             }            
-        }
+        }*/
     },
     "resources": [
         {

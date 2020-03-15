@@ -24,7 +24,7 @@ Param(
         
         Write-host "Working on configuration $configname"
 
-        $AutConfig = Get-AzAutomationDscConfiguration -ResourceGroupName AutomationRGName -AutomationAccountName $AutomationAccName | Where-Object{$_.Name -eq $ConfigName}
+        $AutConfig = Get-AzAutomationDscConfiguration -ResourceGroupName $AutomationRGName -AutomationAccountName $AutomationAccName | Where-Object{$_.Name -eq $ConfigName}
         
         if($ConfigurationDataFileName)
         {

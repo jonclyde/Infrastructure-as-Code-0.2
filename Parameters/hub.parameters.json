@@ -131,17 +131,20 @@
                 {
                     "serviceIdentifier":"dc1",
                     "VMName":"vm-pr-core-dc01",
-                    "DSCConfigurationName":"FirstDomainController"
+                    "DSCConfigurationName": "CustomStates",
+                    "DSCNodeName": "FirstDomainController"
                 },
                 {
                     "serviceIdentifier":"dc2",
                     "VMName":"vm-pr-core-dc02",
-                    "DSCConfigurationName":"OtherDomainController"
+                    "DSCConfigurationName": "CustomStates",
+                    "DSCNodeName": "OtherDomainController"
                 },
                 {
                     "serviceIdentifier":"mgt",
                     "VMName":"vm-pr-core-jb01",
-                    "DSCConfigurationName":"Management"
+                    "DSCConfigurationName": "CustomStates",
+                    "DSCNodeName": "WindowsManagementVM"
                 }
                 
             ]
