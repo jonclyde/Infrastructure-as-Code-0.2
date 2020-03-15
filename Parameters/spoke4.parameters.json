@@ -70,24 +70,36 @@
                 {
                     "serviceIdentifier": "web",
                     "VMName": "vm-prd-web-01",
-                    "publicIP": false
+                    "publicIP": false,
+                    "deallocate":true,
+                    "updateBatch":"",
+                    "backupPolicy":""
                 },
                 {
                     "serviceIdentifier": "web",
                     "VMName": "vm-prd-web-02",
                     "OS": "WS2019",
-                    "publicIP": false
+                    "publicIP": false,
+                    "deallocate":true,
+                    "updateBatch":"",
+                    "backupPolicy":""
                 },
                 {
                     "serviceIdentifier": "app",
                     "VMName": "vm-prd-app-01",
-                    "publicIP": false
+                    "publicIP": false,
+                    "deallocate":true,
+                    "updateBatch":"",
+                    "backupPolicy":""
                 },
                 {
                     "serviceIdentifier": "app",
                     "VMName": "vm-prd-app-02",
                     "OS": "WS2019",
-                    "publicIP": false
+                    "publicIP": false,
+                    "deallocate":true,
+                    "updateBatch":"",
+                    "backupPolicy":""
                 }
             ]
         },

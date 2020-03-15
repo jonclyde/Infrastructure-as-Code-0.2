@@ -70,12 +70,18 @@
                 {
                     "serviceIdentifier": "web",
                     "VMName": "vm-uat-web-01",
-                    "publicIP": false
+                    "publicIP": false,
+                    "deallocate":true,
+                    "updateBatch":"",
+                    "backupPolicy":""
                 },
                 {
                     "serviceIdentifier": "app",
                     "VMName": "vm-uat-app-01",
-                    "publicIP": false
+                    "publicIP": false,
+                    "deallocate":true,
+                    "updateBatch":"",
+                    "backupPolicy":""
                 }
             ]
         },

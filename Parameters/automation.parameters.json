@@ -6,35 +6,48 @@
             "value": [
                 {
                     "ConfigName": "ADRole",
-                    "ConfigFileName": "ADRole.ps1"
+                    "ConfigFileName": "ADRole.ps1",
+                    "ConfigurationDataFileName": ""
                 },
                 {
                     "ConfigName": "RSATFeature",
-                    "ConfigFileName": "RSATFeature.ps1"
+                    "ConfigFileName": "RSATFeature.ps1",
+                    "ConfigurationDataFileName": ""
                 },
                 {
                     "ConfigName": "WebServerRole",
-                    "ConfigFileName": "WebServerRole.ps1"
+                    "ConfigFileName": "WebServerRole.ps1",
+                    "ConfigurationDataFileName": ""
                 },
                 {
                     "ConfigName": "FirstDomainController",
-                    "ConfigFileName": "FirstDomainController.ps1"
+                    "ConfigFileName": "FirstDomainController.ps1",
+                    "ConfigurationDataFileName": ""
                 },
                 {
                     "ConfigName": "OtherDomainController",
-                    "ConfigFileName": "OtherDomainController.ps1"
+                    "ConfigFileName": "OtherDomainController.ps1",
+                    "ConfigurationDataFileName": ""
                 },
                 {
                     "ConfigName": "Template",
-                    "ConfigFileName": "Template.ps1"
+                    "ConfigFileName": "Template.ps1",
+                    "ConfigurationDataFileName": ""
                 },
                 {
                     "ConfigName": "SQLVM",
-                    "ConfigFileName": "SQLVM.ps1"
+                    "ConfigFileName": "SQLVM.ps1",
+                    "ConfigurationDataFileName": ""
                 },
                 {
                     "ConfigName": "Management",
-                    "ConfigFileName": "Management.ps1"
+                    "ConfigFileName": "Management.ps1",
+                    "ConfigurationDataFileName": ""
+                },
+                {
+                    "ConfigName": "Management",
+                    "ConfigFileName": "Management.ps1",
+                    "ConfigurationDataFileName": "dsc.customstates.configurationdata.psd1"
                 }
             ]
         }, 

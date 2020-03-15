@@ -85,19 +85,28 @@
                 {
                     "serviceIdentifier": "dc1",
                     "VMName": "vm-pr-core-dc01",
-                    "publicIP": true
+                    "publicIP": true,
+                    "deallocate":false,
+                    "updateBatch":"",
+                    "backupPolicy":""
                 },
                 {
                     "serviceIdentifier": "dc2",
                     "VMName": "vm-pr-core-dc02",
                     "OS":"WS2019",
-                    "publicIP": true
+                    "publicIP": true,
+                    "deallocate":false,
+                    "updateBatch":"",
+                    "backupPolicy":""
                 },
                 {
                     "serviceIdentifier": "mgt",
                     "VMName": "vm-pr-core-jb01",
                     "OS":"WS2019",
-                    "publicIP": true
+                    "publicIP": true,
+                    "deallocate":true,
+                    "updateBatch":"",
+                    "backupPolicy":""
                 }
             ]
         },

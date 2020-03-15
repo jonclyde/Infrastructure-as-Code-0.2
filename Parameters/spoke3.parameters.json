@@ -70,24 +70,36 @@
                 {
                     "serviceIdentifier": "web",
                     "VMName": "vm-pre-web-01",
-                    "publicIP": false
+                    "publicIP": false,
+                    "deallocate":true,
+                    "updateBatch":"",
+                    "backupPolicy":""
                 },
                 {
                     "serviceIdentifier": "web",
                     "VMName": "vm-pre-web-02",
                     "OS": "WS2019",
-                    "publicIP": false
+                    "publicIP": false,
+                    "deallocate":true,
+                    "updateBatch":"",
+                    "backupPolicy":""
                 },
                 {
                     "serviceIdentifier": "app",
                     "VMName": "vm-pre-app-01",
-                    "publicIP": false
+                    "publicIP": false,
+                    "deallocate":true,
+                    "updateBatch":"",
+                    "backupPolicy":""
                 },
                 {
                     "serviceIdentifier": "app",
                     "VMName": "vm-pre-app-02",
                     "OS": "WS2019",
-                    "publicIP": false
+                    "publicIP": false,
+                    "deallocate":true,
+                    "updateBatch":"",
+                    "backupPolicy":""
                 }
             ]
         },
