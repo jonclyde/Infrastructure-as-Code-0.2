@@ -12,9 +12,6 @@
         "DefaultUsername": {
             "type": "string"
         },
-        "DefaultPw": {
-            "type": "securestring"
-        },
         "dscConfigurations": {
             "type": "array"
         },
@@ -26,12 +23,26 @@
         },
         "DomainName": {
             "type": "string"
+        },
+        "NameforKeyVault":{
+            "type":"string"
+        },
+        "RGNameforKeyVault":{
+            "type":"string"
         }
     },
     "variables": {
         "a-accname": "[concat('aa-',parameters('EnvironmentIdentifier'),'-',parameters('identifier'),'-aut-01')]",
         "DscBlobContainer": "[concat('https://',parameters('AutomationStorageAccount'),'.blob.core.windows.net/dscconfigurations/')]",
-        "DomainJoinUN": "[concat(parameters('DomainName'),'\\',parameters('DefaultUsername'))]"
+        "DomainJoinUN": "[concat(parameters('DomainName'),'\\',parameters('DefaultUsername'))]",
+        "DefaultPw": {
+            "reference": {
+                "keyVault": {
+                    "id": "[concat('/subscriptions/847f0a11-c32e-4c42-8d99-ae7bb0dd6b59/resourceGroups/',parameters('RGNameforKeyVault'),'/providers/Microsoft.KeyVault/vaults/',parameters('NameforKeyVault'))]"
+                },
+                "secretName": "DefaultPw"
+            }
+        }
         /*
             Better way to add modules : https://kvaes.wordpress.com/2016/05/16/azure-automation-adding-modules-via-powershell/
         
@@ -76,7 +87,7 @@
             ],
             "properties": {
                 "userName": "[variables('DomainJoinUN')]",
-                "password": "[parameters('DefaultPw')]"
+                "password": "[variables('DefaultPw')]"
             }
         },
         {
@@ -89,7 +100,7 @@
             ],
             "properties": {
                 "userName": "[parameters('DefaultUsername')]",
-                "password": "[parameters('DefaultPw')]"
+                "password": "[variables('DefaultPw')]"
             }
         },
         {
@@ -102,7 +113,7 @@
             ],
             "properties": {
                 "userName": "[parameters('DefaultUsername')]",
-                "password": "[parameters('DefaultPw')]"
+                "password": "[variables('DefaultPw')]"
             }
         },
         {

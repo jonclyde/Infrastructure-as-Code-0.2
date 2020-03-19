@@ -47,9 +47,6 @@
         "DefaultUsername": {
             "type": "string"
         },
-        "DefaultPw": {
-            "type": "string"
-        },
         "VMSize":{
             "type": "string"
         },
@@ -67,9 +64,24 @@
         },  
         "subnetName":{
             "type": "string"
+        },
+        "NameforKeyVault":{
+            "type":"string"
+        },
+        "RGNameforKeyVault":{
+            "type":"string"
         }
     },
-    "variables": {},
+    "variables": {
+        "DefaultPw": {
+            "reference": {
+                "keyVault": {
+                    "id": "[concat('/subscriptions/847f0a11-c32e-4c42-8d99-ae7bb0dd6b59/resourceGroups/',parameters('RGNameforKeyVault'),'/providers/Microsoft.KeyVault/vaults/',parameters('NameforKeyVault'))]"
+                },
+                "secretName": "DefaultPw"
+            }
+        }
+    },
     "resources": [
         {
             "name": "[parameters('AVSetName')]",
@@ -142,7 +154,7 @@
                 "osProfile": {
                     "computerName": "[parameters('VMstoDeploy')[CopyIndex()].VMName]",
                     "adminUsername": "[parameters('DefaultUsername')]",
-                    "adminPassword": "[parameters('DefaultPw')]"
+                    "adminPassword": "[variables('DefaultPw')]"
                 },
                 "storageProfile": {
                     "imageReference": {

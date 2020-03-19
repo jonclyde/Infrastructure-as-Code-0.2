@@ -73,13 +73,14 @@ Param(
 
             New-AzResourceGroupDeployment -TemplateFile $BarracudaTemplateFile `
                                           -ResourceGroupName $FWRGNamePrimary `
-                                          -TemplateParameterFile $CentralParametersFile `
                                           -Identifier $Identifier `
                                           -VNFirewallRG $FWVNRGPrimary `
                                           -EnvironmentIdentifier $EnvironmentIdentifier `
                                           -FirewallHubSubnetName $FirewallHubSubnetName `
                                           -FirewallHubSubnetRange $FirewallHubSubnetRangePrimary `
-                                          -VMSize $DefaultVMSize
+                                          -VMSize $DefaultVMSize `
+                                          -NameforKeyVault $NameforKeyVault `
+                                          -RGNameforKeyVault `
 
 
             if($DeployDR -eq $true){
@@ -94,13 +95,14 @@ Param(
 
                 New-AzResourceGroupDeployment -TemplateFile $BarracudaTemplateFile `
                                             -ResourceGroupName $FWRGNameDR `
-                                            -TemplateParameterFile $CentralParametersFile `
                                             -Identifier $Identifier `
                                             -VNFirewallRG $FWVNRGDR `
                                             -EnvironmentIdentifier $EnvironmentIdentifier `
                                             -FirewallHubSubnetName $FirewallHubSubnetName `
                                             -FirewallHubSubnetRange $FirewallHubSubnetRangeDR `
-                                            -VMSize $DefaultVMSize
+                                            -VMSize $DefaultVMSize `
+                                            -NameforKeyVault $NameforKeyVault `
+                                            -RGNameforKeyVault `
             }
 
          }
@@ -199,7 +201,9 @@ Param(
                                       -offer $offer `
                                       -sku $sku `
                                       -version $version `
-                                      -subnetName $subnetName
+                                      -subnetName $subnetName `
+                                      -NameforKeyVault $NameforKeyVault `
+                                      -RGNameforKeyVault `
 
         
         #VM spe<cific changes 
