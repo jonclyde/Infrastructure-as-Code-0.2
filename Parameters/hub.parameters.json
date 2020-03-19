@@ -41,7 +41,7 @@
         "DefaultPw": {
             "reference": {
                 "keyVault": {
-                    "id": "/subscriptions/847f0a11-c32e-4c42-8d99-ae7bb0dd6b59/resourceGroups/rg-pr-core-key/providers/Microsoft.KeyVault/vaults/kv-pr-core"
+                    "id": "/subscriptions/847f0a11-c32e-4c42-8d99-ae7bb0dd6b59/resourceGroups/rg-pr-core-key/providers/Microsoft.KeyVault/vaults/kv-pr-core-01"
                 },
                 "secretName": "DefaultPw"
             }
