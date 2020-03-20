@@ -38,7 +38,7 @@
         "DefaultPw": {
             "reference": {
                 "keyVault": {
-                    "id": "[concat('/subscriptions/847f0a11-c32e-4c42-8d99-ae7bb0dd6b59/resourceGroups/',parameters('RGNameforKeyVault'),'/providers/Microsoft.KeyVault/vaults/',parameters('NameforKeyVault'))]"
+                    "id": "[resourceId(parameters('RGNameforKeyVault'), 'Microsoft.KeyVault/vaults', parameters('NameforKeyVault'))]"
                 },
                 "secretName": "DefaultPw"
             }
