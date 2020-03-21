@@ -17,9 +17,6 @@
         "DSCConfigurations": {
             "type": "array"
         },
-        "DefaultPw": {
-            "type": "string"
-        },
         "Services": {
             "type": "array"
         },
