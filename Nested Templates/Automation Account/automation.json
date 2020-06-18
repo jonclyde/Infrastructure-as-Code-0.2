@@ -3,8 +3,7 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "identifier": {
-            "type": "string",
-            "defaultValue": "core"
+            "type": "string"
         },
         "EnvironmentIdentifier": {
             "type": "string"
@@ -66,7 +65,7 @@
             ],
             "properties": {
                 "userName": "[variables('DomainJoinUN')]",
-                "password": "[variables('DefaultPw')]"
+                "password": "P@ssw0rd2!!!"
             }
         },
         {
@@ -79,7 +78,7 @@
             ],
             "properties": {
                 "userName": "[parameters('DefaultUsername')]",
-                "password": "[variables('DefaultPw')]"
+                "password": "P@ssw0rd2!!!"
             }
         },
         {
@@ -92,7 +91,7 @@
             ],
             "properties": {
                 "userName": "[parameters('DefaultUsername')]",
-                "password": "[variables('DefaultPw')]"
+                "password": "P@ssw0rd2!!!"
             }
         },
         {
