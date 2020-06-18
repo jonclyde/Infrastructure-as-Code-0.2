@@ -43,27 +43,6 @@
                 "secretName": "DefaultPw"
             }
         }
-        /*
-            Better way to add modules : https://kvaes.wordpress.com/2016/05/16/azure-automation-adding-modules-via-powershell/
-        
-        "dscResources": {
-            "xActiveDirectory": {
-                "name": "xActiveDirectory",
-                "url": "https://www.powershellgallery.com/api/v2/package/xactivedirectory/3.0.0"
-            },
-            "xStorage": {
-                "name": "xStorage",
-                "url": "https://www.powershellgallery.com/api/v2/package/xstorage/3.4.0"
-            },
-            "xDSCDomainJoin": {
-                "name": "xDSCDomainJoin",
-                "url": "https://www.powershellgallery.com/api/v2/package/xdscdomainjoin/1.2.23"
-            },
-            "ComputerManagementDsc": {
-                "name": "ComputerManagementDsc",
-                "url": "https://www.powershellgallery.com/api/v2/package/computermanagementdsc/8.0.0"
-            }            
-        }*/
     },
     "resources": [
         {
@@ -169,32 +148,6 @@
                 "isEncrypted": true
             }
         }
-        /*
-        {
-            "name": "[concat(variables('a-accname'),'/compilation',parameters('dscConfigurations')[CopyIndex()].ConfigName)]",
-            "type": "Microsoft.Automation/automationAccounts/compilationjobs",
-            "apiVersion": "2018-01-15",
-            "tags": {},
-            "dependsOn": [
-                "[variables('a-accname')]",
-                "[parameters('dscConfigurations')[CopyIndex()].ConfigName]",
-                "[variables('dscResources').xActiveDirectory.name]",
-                "[variables('dscResources').xStorage.name]",
-                "[variables('dscResources').xDSCDomainJoin.name]",
-                "[variables('dscResources').ComputerManagementDsc.name]"
-            ],
-            "properties": {
-                "configuration": {
-                    "name": "[parameters('dscConfigurations')[CopyIndex()].ConfigName]"
-                },
-                "parameters": {}
-            },
-            "copy": {
-                "name": "compilation",
-                "count": "[length(parameters('dscConfigurations'))]",
-                "mode": "Serial"
-            }
-        }*/
     ],
     "outputs": {}
 }
