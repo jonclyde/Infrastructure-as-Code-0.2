@@ -28,6 +28,9 @@
         },
         "RGNameforKeyVault":{
             "type":"string"
+        },
+        "SubscriptionId": {
+            "type": "string"
         }
     },
     "variables": {
@@ -37,7 +40,7 @@
         "DefaultPw": {
             "reference": {
                 "keyVault": {
-                    "id": "[resourceId(parameters('RGNameforKeyVault'), 'Microsoft.KeyVault/vaults', parameters('NameforKeyVault'))]"
+                    "id": "[concat('/subscriptions/',parameters('SubscriptionId'),'/resourceGroups/',parameters('RGNameforKeyVault'), '/providers/Microsoft.KeyVault/vaults/', parameters('NameforKeyVault'))]"
                 },
                 "secretName": "DefaultPw"
             }
@@ -65,7 +68,7 @@
             ],
             "properties": {
                 "userName": "[variables('DomainJoinUN')]",
-                "password": "P@ssw0rd2!!!"
+                "password": "[variables('DefaultPw')]"
             }
         },
         {
@@ -78,7 +81,7 @@
             ],
             "properties": {
                 "userName": "[parameters('DefaultUsername')]",
-                "password": "P@ssw0rd2!!!"
+                "password": "[variables('DefaultPw')]"
             }
         },
         {
@@ -91,7 +94,7 @@
             ],
             "properties": {
                 "userName": "[parameters('DefaultUsername')]",
-                "password": "P@ssw0rd2!!!"
+                "password": "[variables('DefaultPw')]"
             }
         },
         {
