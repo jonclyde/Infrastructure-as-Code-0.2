@@ -1,155 +1,143 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.0.0",
-    "parameters": {
-        "identifier": {
-            "type": "string"
-        },
-        "EnvironmentIdentifier": {
-            "type": "string"
-        },
-        "DefaultUsername": {
-            "type": "string"
-        },
-        "dscConfigurations": {
-            "type": "array"
-        },
-        "AutomationModules": {
-            "type": "array"
-        },
-        "AutomationStorageAccount": {
-            "type": "string"
-        },
-        "DomainName": {
-            "type": "string"
-        },
-        "NameforKeyVault":{
-            "type":"string"
-        },
-        "RGNameforKeyVault":{
-            "type":"string"
-        },
-        "SubscriptionId": {
-            "type": "string"
-        }
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "identifier": {
+      "type": "string"
     },
-    "variables": {
-        "a-accname": "[concat('aa-',parameters('EnvironmentIdentifier'),'-',parameters('identifier'),'-aut-01')]",
-        "DscBlobContainer": "[concat('https://',parameters('AutomationStorageAccount'),'.blob.core.windows.net/dscconfigurations/')]",
-        "DomainJoinUN": "[concat(parameters('DomainName'),'\\',parameters('DefaultUsername'))]",
-        "DefaultPw": {
-            "reference": {
-                "keyVault": {
-                    "id": "[concat('/subscriptions/',parameters('SubscriptionId'),'/resourceGroups/',parameters('RGNameforKeyVault'), '/providers/Microsoft.KeyVault/vaults/', parameters('NameforKeyVault'))]"
-                },
-                "secretName": "DefaultPw"
-            }
-        }
+    "EnvironmentIdentifier": {
+      "type": "string"
     },
-    "resources": [
-        {
-            "type": "Microsoft.Automation/automationAccounts",
-            "apiVersion": "2015-10-31",
-            "name": "[variables('a-accname')]",
-            "location": "westeurope",
-            "properties": {
-                "Sku": {
-                    "name": "OMS"
-                }
-            }
+    "DefaultUsername": {
+      "type": "string"
+    },
+    "dscConfigurations": {
+      "type": "array"
+    },
+    "AutomationModules": {
+      "type": "array"
+    },
+    "AutomationStorageAccount": {
+      "type": "string"
+    },
+    "DomainName": {
+      "type": "string"
+    },
+    "NameforKeyVault": {
+      "type": "string"
+    },
+    "RGNameforKeyVault": {
+      "type": "string"
+    },
+    "SubscriptionId": {
+      "type": "string"
+    }
+  },
+  "variables": {
+    "a-accname": "[concat('aa-',parameters('EnvironmentIdentifier'),'-',parameters('identifier'),'-aut-01')]",
+    "DscBlobContainer": "[concat('https://',parameters('AutomationStorageAccount'),'.blob.core.windows.net/dscconfigurations/')]",
+    "DomainJoinUN": "[concat(parameters('DomainName'),'\\',parameters('DefaultUsername'))]",
+    "DefaultPw": {
+      "reference": {
+        "keyVault": {
+          "id": "[resourceId(parameters('RGNameforKeyVault'), 'Microsoft.KeyVault/vaults', parameters('NameforKeyVault'))]"
         },
-        {
-            "name": "[concat(variables('a-accname'),'/domainJoinCredential')]",
-            "type": "Microsoft.Automation/automationAccounts/credentials",
-            "apiVersion": "2018-01-15",
-            "location": "[resourceGroup().location]",
-            "dependsOn": [
-                "[variables('a-accname')]"
-            ],
-            "properties": {
-                "userName": "[variables('DomainJoinUN')]",
-                "password": "[variables('DefaultPw')]"
-            }
-        },
-        {
-            "name": "[concat(variables('a-accname'),'/domainCredential')]",
-            "type": "Microsoft.Automation/automationAccounts/credentials",
-            "apiVersion": "2018-01-15",
-            "location": "[resourceGroup().location]",
-            "dependsOn": [
-                "[variables('a-accname')]"
-            ],
-            "properties": {
-                "userName": "[parameters('DefaultUsername')]",
-                "password": "[variables('DefaultPw')]"
-            }
-        },
-        {
-            "name": "[concat(variables('a-accname'),'/safeModeCredential')]",
-            "type": "Microsoft.Automation/automationAccounts/credentials",
-            "apiVersion": "2018-01-15",
-            "location": "[resourceGroup().location]",
-            "dependsOn": [
-                "[variables('a-accname')]"
-            ],
-            "properties": {
-                "userName": "[parameters('DefaultUsername')]",
-                "password": "[variables('DefaultPw')]"
-            }
-        },
-        {
-            "name": "[concat(variables('a-accname'),'/',parameters('AutomationModules')[CopyIndex()].Name)]",
-            "type": "Microsoft.Automation/automationAccounts/modules",
-            "apiVersion": "2018-01-15",
-            "location": "[resourceGroup().location]",
-            "dependsOn": [
-                "[variables('a-accname')]"
-            ],
-            "properties": {
-                "contentLink": {
-                    "uri": "[concat('https://www.powershellgallery.com/api/v2/package/',parameters('AutomationModules')[CopyIndex()].Name,'/',parameters('AutomationModules')[CopyIndex()].Version)]"
-                }
-            },
-            "copy": {
-                "name": "modules",
-                "count": "[length(parameters('AutomationModules'))]"
-            }
-        },
-        {
-            "name": "[concat(variables('a-accname'),'/',parameters('dscConfigurations')[CopyIndex()].ConfigName)]",
-            "type": "Microsoft.Automation/automationAccounts/configurations",
-            "apiVersion": "2018-01-15",
-            "location": "[resourceGroup().location]",
-            "dependsOn": [
-                "[variables('a-accname')]"
-            ],
-            "properties": {
-                "state": "Published",
-                "overwrite": "true",
-                "source": {
-                    "type": "uri",
-                    "value": "[concat(variables('DscBlobContainer'),parameters('dscConfigurations')[CopyIndex()].ConfigFileName)]"
-                }
-            },
-            "copy": {
-                "name": "configurations",
-                "count": "[length(parameters('dscConfigurations'))]",
-                "mode": "Serial"
-            }
-        },
-        {
-            "name": "[concat(variables('a-accname'),'/DomainName')]",
-            "type": "Microsoft.Automation/automationAccounts/variables",
-            "apiVersion": "2015-10-31",
-            "dependsOn": [
-                "[variables('a-accname')]"
-            ],
-            "properties": {
-                "value": "[concat('\"',parameters('DomainName'),'\"')]",
-                "description": "Active Directory domain name variable",
-                "isEncrypted": true
-            }
+        "secretName": "DefaultPw"
+      }
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Automation/automationAccounts",
+      "apiVersion": "2015-10-31",
+      "name": "[variables('a-accname')]",
+      "location": "westeurope",
+      "properties": {
+        "Sku": {
+          "name": "OMS"
         }
-    ],
-    "outputs": {}
+      }
+    },
+    {
+      "name": "[concat(variables('a-accname'),'/domainJoinCredential')]",
+      "type": "Microsoft.Automation/automationAccounts/credentials",
+      "apiVersion": "2018-01-15",
+      "location": "[resourceGroup().location]",
+      "dependsOn": ["[variables('a-accname')]"],
+      "properties": {
+        "userName": "[variables('DomainJoinUN')]",
+        "password": "[variables('DefaultPw')]"
+      }
+    },
+    {
+      "name": "[concat(variables('a-accname'),'/domainCredential')]",
+      "type": "Microsoft.Automation/automationAccounts/credentials",
+      "apiVersion": "2018-01-15",
+      "location": "[resourceGroup().location]",
+      "dependsOn": ["[variables('a-accname')]"],
+      "properties": {
+        "userName": "[parameters('DefaultUsername')]",
+        "password": "[variables('DefaultPw')]"
+      }
+    },
+    {
+      "name": "[concat(variables('a-accname'),'/safeModeCredential')]",
+      "type": "Microsoft.Automation/automationAccounts/credentials",
+      "apiVersion": "2018-01-15",
+      "location": "[resourceGroup().location]",
+      "dependsOn": ["[variables('a-accname')]"],
+      "properties": {
+        "userName": "[parameters('DefaultUsername')]",
+        "password": "[variables('DefaultPw')]"
+      }
+    },
+    {
+      "name": "[concat(variables('a-accname'),'/',parameters('AutomationModules')[CopyIndex()].Name)]",
+      "type": "Microsoft.Automation/automationAccounts/modules",
+      "apiVersion": "2018-01-15",
+      "location": "[resourceGroup().location]",
+      "dependsOn": ["[variables('a-accname')]"],
+      "properties": {
+        "contentLink": {
+          "uri": "[concat('https://www.powershellgallery.com/api/v2/package/',parameters('AutomationModules')[CopyIndex()].Name,'/',parameters('AutomationModules')[CopyIndex()].Version)]"
+        }
+      },
+      "copy": {
+        "name": "modules",
+        "count": "[length(parameters('AutomationModules'))]"
+      }
+    },
+    {
+      "name": "[concat(variables('a-accname'),'/',parameters('dscConfigurations')[CopyIndex()].ConfigName)]",
+      "type": "Microsoft.Automation/automationAccounts/configurations",
+      "apiVersion": "2018-01-15",
+      "location": "[resourceGroup().location]",
+      "dependsOn": ["[variables('a-accname')]"],
+      "properties": {
+        "state": "Published",
+        "overwrite": "true",
+        "source": {
+          "type": "uri",
+          "value": "[concat(variables('DscBlobContainer'),parameters('dscConfigurations')[CopyIndex()].ConfigFileName)]"
+        }
+      },
+      "copy": {
+        "name": "configurations",
+        "count": "[length(parameters('dscConfigurations'))]",
+        "mode": "Serial"
+      }
+    },
+    {
+      "name": "[concat(variables('a-accname'),'/DomainName')]",
+      "type": "Microsoft.Automation/automationAccounts/variables",
+      "apiVersion": "2015-10-31",
+      "dependsOn": ["[variables('a-accname')]"],
+      "properties": {
+        "value": "[concat('\"',parameters('DomainName'),'\"')]",
+        "description": "Active Directory domain name variable",
+        "isEncrypted": true
+      }
+    }
+  ],
+  "outputs": {}
 }
