@@ -20,31 +20,17 @@
     "AutomationStorageAccount": {
       "type": "string"
     },
+    "DefaultPw": {
+      "type": "securestring"
+    },
     "DomainName": {
-      "type": "string"
-    },
-    "NameforKeyVault": {
-      "type": "string"
-    },
-    "RGNameforKeyVault": {
-      "type": "string"
-    },
-    "SubscriptionId": {
       "type": "string"
     }
   },
   "variables": {
     "a-accname": "[concat('aa-',parameters('EnvironmentIdentifier'),'-',parameters('identifier'),'-aut-01')]",
     "DscBlobContainer": "[concat('https://',parameters('AutomationStorageAccount'),'.blob.core.windows.net/dscconfigurations/')]",
-    "DomainJoinUN": "[concat(parameters('DomainName'),'\\',parameters('DefaultUsername'))]",
-    "DefaultPw": {
-      "reference": {
-        "keyVault": {
-          "id": "[resourceId(parameters('RGNameforKeyVault'), 'Microsoft.KeyVault/vaults', parameters('NameforKeyVault'))]"
-        },
-        "secretName": "DefaultPw"
-      }
-    }
+    "DomainJoinUN": "[concat(parameters('DomainName'),'\\',parameters('DefaultUsername'))]"
   },
   "resources": [
     {
@@ -66,7 +52,7 @@
       "dependsOn": ["[variables('a-accname')]"],
       "properties": {
         "userName": "[variables('DomainJoinUN')]",
-        "password": "[variables('DefaultPw')]"
+        "password": "[parameters('DefaultPw')]"
       }
     },
     {
@@ -77,7 +63,7 @@
       "dependsOn": ["[variables('a-accname')]"],
       "properties": {
         "userName": "[parameters('DefaultUsername')]",
-        "password": "[variables('DefaultPw')]"
+        "password": "[parameters('DefaultPw')]"
       }
     },
     {
@@ -88,7 +74,7 @@
       "dependsOn": ["[variables('a-accname')]"],
       "properties": {
         "userName": "[parameters('DefaultUsername')]",
-        "password": "[variables('DefaultPw')]"
+        "password": "[parameters('DefaultPw')]"
       }
     },
     {
