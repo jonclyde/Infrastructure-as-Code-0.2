@@ -21,7 +21,7 @@
       "type": "string"
     },
     "DefaultPw": {
-      "type": "securestring"
+      "type": "string"
     },
     "DomainName": {
       "type": "string"

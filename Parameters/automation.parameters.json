@@ -1,79 +1,82 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
-    "contentVersion": "1.0.0.0",
-    "parameters": {
-        "dscConfigurations": {
-            "value": [
-                {
-                    "ConfigName": "ADRole",
-                    "ConfigFileName": "ADRole.ps1",
-                    "ConfigurationDataFileName": ""
-                },
-                {
-                    "ConfigName": "RSATFeature",
-                    "ConfigFileName": "RSATFeature.ps1",
-                    "ConfigurationDataFileName": ""
-                },
-                {
-                    "ConfigName": "WebServerRole",
-                    "ConfigFileName": "WebServerRole.ps1",
-                    "ConfigurationDataFileName": ""
-                },
-                {
-                    "ConfigName": "FirstDomainController",
-                    "ConfigFileName": "FirstDomainController.ps1",
-                    "ConfigurationDataFileName": ""
-                },
-                {
-                    "ConfigName": "OtherDomainController",
-                    "ConfigFileName": "OtherDomainController.ps1",
-                    "ConfigurationDataFileName": ""
-                },
-                {
-                    "ConfigName": "Template",
-                    "ConfigFileName": "Template.ps1",
-                    "ConfigurationDataFileName": ""
-                },
-                {
-                    "ConfigName": "SQLVM",
-                    "ConfigFileName": "SQLVM.ps1",
-                    "ConfigurationDataFileName": ""
-                },
-                {
-                    "ConfigName": "Management",
-                    "ConfigFileName": "Management.ps1",
-                    "ConfigurationDataFileName": ""
-                },
-                {
-                    "ConfigName": "CustomStates",
-                    "ConfigFileName": "CustomStates.ps1",
-                    "ConfigurationDataFileName": "dsc.customstates.configurationdata.psd1"
-                }
-            ]
-        }, 
-        "AutomationModules": {
-            "value": [
-                {
-                    "Name": "xActiveDirectory",
-                    "Version": "3.0.0"
-                },
-                {
-                    "Name": "xstorage",
-                    "Version": "3.4.0"
-                },
-                {
-                    "Name": "xdscdomainjoin",
-                    "Version": "1.2.23"
-                },
-                {
-                    "Name": "computermanagementdsc",
-                    "Version": "8.0.0"
-                },
-                {
-                    "Name": "SqlServerDsc",
-                    "Version": "13.3.0"
-                }
-            ]
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "dscConfigurations": {
+      "value": [
+        {
+          "ConfigName": "ADRole",
+          "ConfigFileName": "ADRole.ps1",
+          "ConfigurationDataFileName": ""
+        },
+        {
+          "ConfigName": "RSATFeature",
+          "ConfigFileName": "RSATFeature.ps1",
+          "ConfigurationDataFileName": ""
+        },
+        {
+          "ConfigName": "WebServerRole",
+          "ConfigFileName": "WebServerRole.ps1",
+          "ConfigurationDataFileName": ""
+        },
+        {
+          "ConfigName": "FirstDomainController",
+          "ConfigFileName": "FirstDomainController.ps1",
+          "ConfigurationDataFileName": ""
+        },
+        {
+          "ConfigName": "OtherDomainController",
+          "ConfigFileName": "OtherDomainController.ps1",
+          "ConfigurationDataFileName": ""
+        },
+        {
+          "ConfigName": "Template",
+          "ConfigFileName": "Template.ps1",
+          "ConfigurationDataFileName": ""
+        },
+        {
+          "ConfigName": "SQLVM",
+          "ConfigFileName": "SQLVM.ps1",
+          "ConfigurationDataFileName": ""
+        },
+        {
+          "ConfigName": "Management",
+          "ConfigFileName": "Management.ps1",
+          "ConfigurationDataFileName": ""
+        },
+        {
+          "ConfigName": "CustomStates",
+          "ConfigFileName": "CustomStates.ps1",
+          "ConfigurationDataFileName": "dsc.customstates.configurationdata.psd1"
         }
+      ]
+    },
+    "AutomationModules": {
+      "value": [
+        {
+          "Name": "xActiveDirectory",
+          "Version": "3.0.0"
+        },
+        {
+          "Name": "xstorage",
+          "Version": "3.4.0"
+        },
+        {
+          "Name": "xdscdomainjoin",
+          "Version": "1.2.23"
+        },
+        {
+          "Name": "computermanagementdsc",
+          "Version": "8.0.0"
+        },
+        {
+          "Name": "SqlServerDsc",
+          "Version": "13.3.0"
+        }
+      ]
+    },
+    "DefaultPw": {
+      "value": "P@ssw0rd2!!!"
     }
+  }
 }
