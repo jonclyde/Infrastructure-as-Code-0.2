@@ -80,7 +80,7 @@ Param(
                                           -FirewallHubSubnetRange $FirewallHubSubnetRangePrimary `
                                           -VMSize $DefaultVMSize `
                                           -NameforKeyVault $NameforKeyVault `
-                                          -RGNameforKeyVault `
+                                          -RGNameforKeyVault $RGNameforKeyVault
 
 
             if($DeployDR -eq $true){
@@ -102,7 +102,7 @@ Param(
                                             -FirewallHubSubnetRange $FirewallHubSubnetRangeDR `
                                             -VMSize $DefaultVMSize `
                                             -NameforKeyVault $NameforKeyVault `
-                                            -RGNameforKeyVault `
+                                            -RGNameforKeyVault $RGNameforKeyVault
             }
 
          }
@@ -203,7 +203,7 @@ Param(
                                       -version $version `
                                       -subnetName $subnetName `
                                       -NameforKeyVault $NameforKeyVault `
-                                      -RGNameforKeyVault `
+                                      -RGNameforKeyVault $RGNameforKeyVault
 
         
         #VM spe<cific changes 
