@@ -2,6 +2,9 @@
     "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
+        "DefaultPw": {
+            "type": "securestring"
+        },
         "Identifier": {
             "type": "string",
             "metadata": {
@@ -100,18 +103,10 @@
         "gcfSubnetDefaultGw": "[concat( variables( 'gcfSubnetAddrSplit' )[0], '.', variables( 'gcfSubnetAddrSplit' )[1], '.', variables( 'gcfSubnetAddrSplit' )[2], '.', add( int( variables( 'gcfSubnetAddrSplit' )[3]), 1 ))]",
         "gcfVmAddress1": "[concat( variables( 'gcfSubnetAddrSplit' )[0], '.', variables( 'gcfSubnetAddrSplit' )[1], '.', variables( 'gcfSubnetAddrSplit' )[2], '.', add( int( variables( 'gcfSubnetAddrSplit' )[3]), 5 ))]",
         "gcfVmAddress2": "[concat( variables( 'gcfSubnetAddrSplit' )[0], '.', variables( 'gcfSubnetAddrSplit' )[1], '.', variables( 'gcfSubnetAddrSplit' )[2], '.', add( int( variables( 'gcfSubnetAddrSplit' )[3]), 6 ))]",
-        "gcfCustomData1": "[Base64(concat( '#!/bin/bash\n\n/opb/cloud-setmip ', variables('gcfVmAddress1'), ' ', variables( 'gcfSubnetMask' ), ' ', variables( 'gcfSubnetDefaultGw' ), '\n', 'echo ', variables('singleQuotationMark'), variables( 'DefaultPw'), variables('singleQuotationMark'), ' | /opb/create-dha -s S1 -c -o ', variables('gcfVmAddress2'), ' -n ', variables( 'gcfSubnetMask' ), ' -g ', variables( 'gcfSubnetDefaultGw' ), '\n'))]",
+        "gcfCustomData1": "[Base64(concat( '#!/bin/bash\n\n/opb/cloud-setmip ', variables('gcfVmAddress1'), ' ', variables( 'gcfSubnetMask' ), ' ', variables( 'gcfSubnetDefaultGw' ), '\n', 'echo ', variables('singleQuotationMark'), parameters( 'DefaultPw'), variables('singleQuotationMark'), ' | /opb/create-dha -s S1 -c -o ', variables('gcfVmAddress2'), ' -n ', variables( 'gcfSubnetMask' ), ' -g ', variables( 'gcfSubnetDefaultGw' ), '\n'))]",
         "gcfCustomData2": "[Base64('\n')]",
         "gcfCustomDataCC1": "[base64(concat('#!/bin/bash\n\n', 'echo \"*/2 * * * * root echo \\\"', parameters( 'ccSecret' ), '\\\" | /opt/phion/bin/getpar -a ', parameters('ccIpAddress'), ' -r ', parameters( 'ccRangeId' ), ' -c ', parameters( 'ccClusterName' ), ' -b ', variables( 'gcfVmName1' ), ' -d /opt/phion/update/box.par -s --verbosity 10 >> /tmp/getpar.log && /etc/rc.d/init.d/phion stop && /etc/rc.d/init.d/phion start && rm /etc/cron.d/getpar\" > /etc/cron.d/getpar\n'))]",
-        "gcfCustomDataCC2": "[base64(concat('#!/bin/bash\n\n', 'echo \"*/2 * * * * root echo \\\"', parameters( 'ccSecret' ), '\\\" | /opt/phion/bin/getpar -a ', parameters('ccIpAddress'), ' -r ', parameters( 'ccRangeId' ), ' -c ', parameters( 'ccClusterName' ), ' -b ', variables( 'gcfVmName2' ), ' -d /opt/phion/update/box.par -s --verbosity 10 >> /tmp/getpar.log && /etc/rc.d/init.d/phion stop && /etc/rc.d/init.d/phion start && rm /etc/cron.d/getpar\" > /etc/cron.d/getpar\n'))]",
-        "DefaultPw": {
-            "reference": {
-                "keyVault": {
-                    "id": "[concat('/subscriptions/847f0a11-c32e-4c42-8d99-ae7bb0dd6b59/resourceGroups/',parameters('RGNameforKeyVault'),'/providers/Microsoft.KeyVault/vaults/',parameters('NameforKeyVault'))]"
-                },
-                "secretName": "DefaultPw"
-            }
-        }
+        "gcfCustomDataCC2": "[base64(concat('#!/bin/bash\n\n', 'echo \"*/2 * * * * root echo \\\"', parameters( 'ccSecret' ), '\\\" | /opt/phion/bin/getpar -a ', parameters('ccIpAddress'), ' -r ', parameters( 'ccRangeId' ), ' -c ', parameters( 'ccClusterName' ), ' -b ', variables( 'gcfVmName2' ), ' -d /opt/phion/update/box.par -s --verbosity 10 >> /tmp/getpar.log && /etc/rc.d/init.d/phion stop && /etc/rc.d/init.d/phion start && rm /etc/cron.d/getpar\" > /etc/cron.d/getpar\n'))]"
     },
     "resources": [
         {
@@ -443,7 +438,7 @@
                 "osProfile": {
                     "computerName": "[variables('gcfVmName1')]",
                     "adminUsername": "[variables('adminUsername')]",
-                    "adminPassword": "[variables('DefaultPw')]",
+                    "adminPassword": "[parameters('DefaultPw')]",
                     "customData": "[if(equals(parameters('ccManaged'), 'yes'), variables('gcfCustomDataCC1'), variables('gcfCustomData1'))]"
                 },
                 "storageProfile": {
