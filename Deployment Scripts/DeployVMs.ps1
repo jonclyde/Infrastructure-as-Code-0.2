@@ -28,6 +28,8 @@ Param(
         [Parameter(Mandatory=$true)]
         $DefaultUsername,
         [Parameter(Mandatory=$true)]
+        $DefaultPW,
+        [Parameter(Mandatory=$true)]
         $AutomationRG,
         [Parameter(Mandatory=$true)]
         $NameEncryptKey
@@ -80,7 +82,8 @@ Param(
                                           -FirewallHubSubnetRange $FirewallHubSubnetRangePrimary `
                                           -VMSize $DefaultVMSize `
                                           -NameforKeyVault $NameforKeyVault `
-                                          -RGNameforKeyVault $RGNameforKeyVault
+                                          -RGNameforKeyVault $RGNameforKeyVault `
+                                          -DefaultPW $DefaultPW
 
 
             if($DeployDR -eq $true){
@@ -102,7 +105,8 @@ Param(
                                             -FirewallHubSubnetRange $FirewallHubSubnetRangeDR `
                                             -VMSize $DefaultVMSize `
                                             -NameforKeyVault $NameforKeyVault `
-                                            -RGNameforKeyVault $RGNameforKeyVault
+                                            -RGNameforKeyVault $RGNameforKeyVault `
+                                            -DefaultPW $DefaultPW
             }
 
          }
@@ -203,7 +207,8 @@ Param(
                                       -version $version `
                                       -subnetName $subnetName `
                                       -NameforKeyVault $NameforKeyVault `
-                                      -RGNameforKeyVault $RGNameforKeyVault
+                                      -RGNameforKeyVault $RGNameforKeyVault `
+                                      -DefaultPW $DefaultPW
 
         
         #VM spe<cific changes 
