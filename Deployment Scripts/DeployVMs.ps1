@@ -28,7 +28,7 @@ Param(
     [Parameter(Mandatory = $true)]
     $DefaultUsername,
     [Parameter(Mandatory = $true)]
-    $DefaultPW,
+    $DefaultPw,
     [Parameter(Mandatory = $true)]
     $AutomationRG,
     [Parameter(Mandatory = $true)]
@@ -45,7 +45,7 @@ $DSCTemplateFile = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSSc
 #$BackupTemplatefile = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, "..\Nested Templates\Recovery Services Vault\protectvm.json"))
 $AntimalwareTemplatefile = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, "..\Nested Templates\VM Extensions\Microsoft Antimalware\microsoftantimalware.json"))
 $LogAnalyticsTemplatefile = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, "..\Nested Templates\VM Extensions\Log Analytics\loganalytics.json"))
-$DefaultPW = ConvertTo-SecureString -String $DefaultPW -AsPlainText -Force
+$DefaultPw = ConvertTo-SecureString -String $DefaultPw -AsPlainText -Force
 
 if ($DeployType -eq "firewall" -and $spoke -ne "hub") {
     Write-Host "Parameters are invalid. Deploy type is firewall but spoke is not set to hub"
@@ -84,7 +84,7 @@ if ($DeployType -eq "Firewall") {
             -VMSize $DefaultVMSize `
             -NameforKeyVault $NameforKeyVault `
             -RGNameforKeyVault $RGNameforKeyVault `
-            -DefaultPW $DefaultPW
+            -DefaultPw "$DefaultPw"
 
 
         if ($DeployDR -eq $true) {
@@ -107,7 +107,7 @@ if ($DeployType -eq "Firewall") {
                 -VMSize $DefaultVMSize `
                 -NameforKeyVault $NameforKeyVault `
                 -RGNameforKeyVault $RGNameforKeyVault `
-                -DefaultPW $DefaultPW
+                -DefaultPw "$DefaultPw"
         }
 
     }
@@ -209,7 +209,7 @@ elseif ($DeployType -eq "Standard") {
                 -subnetName $subnetName `
                 -NameforKeyVault $NameforKeyVault `
                 -RGNameforKeyVault $RGNameforKeyVault `
-                -DefaultPW $DefaultPW
+                -DefaultPw "$DefaultPw"
 
         
             #VM spe<cific changes 
