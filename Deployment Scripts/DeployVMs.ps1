@@ -302,7 +302,7 @@ elseif ($DeployType -eq "Standard") {
             
                 if ($Antimalware -eq $true) {
                     "Deploying Microsoft antimalware"
-                    New-AzResourceGroupDeployment -ResourceGroupName $serviceRGName -TemplateFile $AntimalwareTemplatefile -ServiceIdentifier $serviceidentifier -TemplateParameterFile $VMsParametersFile
+                    New-AzResourceGroupDeployment -ResourceGroupName $serviceRGName -TemplateFile $AntimalwareTemplatefile -ServiceIdentifier $serviceidentifier -TemplateParameterFile $VMsParametersFile -DefaultPw "$DefaultPw"
                 }
             
 
@@ -329,13 +329,13 @@ elseif ($DeployType -eq "Standard") {
 
                     $workspaceId = $workspace.CustomerId
 
-                    New-AzResourceGroupDeployment -ResourceGroupName $serviceRGName -TemplateFile $LogAnalyticsTemplatefile -ServiceIdentifier $serviceidentifier -TemplateParameterFile $VMsParametersFile -workspaceName $workspaceName -WorkspaceId $workspaceId -workspaceRG $workspaceRG
+                    New-AzResourceGroupDeployment -ResourceGroupName $serviceRGName -TemplateFile $LogAnalyticsTemplatefile -ServiceIdentifier $serviceidentifier -TemplateParameterFile $VMsParametersFile -workspaceName $workspaceName -WorkspaceId $workspaceId -workspaceRG $workspaceRG -DefaultPw "$DefaultPw"
                 }
             
                 #Automation DSC extensions
                 $AutomationAccName = "aa-pr-core-aut-01" 
         
-                New-AzResourceGroupDeployment -AutomationRG $AutomationRG -AutomationAccName $AutomationAccName -ResourceGroupName $serviceRGName -TemplateParameterFile $VMsParametersFile -TemplateFile $DSCTemplateFile -ServiceIdentifier $serviceidentifier
+                New-AzResourceGroupDeployment -AutomationRG $AutomationRG -AutomationAccName $AutomationAccName -ResourceGroupName $serviceRGName -TemplateParameterFile $VMsParametersFile -TemplateFile $DSCTemplateFile -ServiceIdentifier $serviceidentifier -DefaultPw "$DefaultPw"
 
      
             }
