@@ -45,7 +45,7 @@ $DSCTemplateFile = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSSc
 #$BackupTemplatefile = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, "..\Nested Templates\Recovery Services Vault\protectvm.json"))
 $AntimalwareTemplatefile = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, "..\Nested Templates\VM Extensions\Microsoft Antimalware\microsoftantimalware.json"))
 $LogAnalyticsTemplatefile = [System.IO.Path]::GetFullPath([System.IO.Path]::Combine($PSScriptRoot, "..\Nested Templates\VM Extensions\Log Analytics\loganalytics.json"))
-$DefaultPw = ConvertTo-SecureString -String $DefaultPw -AsPlainText -Force
+#$DefaultPw = ConvertTo-SecureString -String $DefaultPw -AsPlainText -Force
 
 if ($DeployType -eq "firewall" -and $spoke -ne "hub") {
     Write-Host "Parameters are invalid. Deploy type is firewall but spoke is not set to hub"
